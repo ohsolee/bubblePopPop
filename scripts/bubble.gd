@@ -52,8 +52,12 @@ func setup_motion(dir: Vector2) -> void:
 	# Main이 스폰할 때 진행 방향을 넘겨준다.
 	move_dir = dir.normalized()
 
-func setup_character(_who: String) -> void:
+func setup_character(who: String) -> void:
 	is_character = true
-	# 아직 캐릭터 아트가 없어서, 임시로 방울 색을 노랗게 바꿔 눈으로 구분한다.
-	# (2단계에서 진짜 루이/토토 스프라이트로 교체)
-	$BubbleSprite.modulate = Color(1.0, 0.85, 0.2)
+	if who == "rui":
+		# 씬(Bubble.tscn)에 지정된 루이(Rui) 이미지를 버블 위에 표시
+		$CharacterSprite.show()
+	else:
+		# 토토 아트는 아직 없어 임시로 버블을 노랗게 틴트해 구분
+		# (토토 스프라이트가 생기면 루이처럼 CharacterSprite로 연결)
+		$BubbleSprite.modulate = Color(1.0, 0.85, 0.2)

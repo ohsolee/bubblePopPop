@@ -10,7 +10,7 @@ var bubble_scene: PackedScene = preload("res://scenes/Bubble.tscn")
 var bubbles_since_character: int = 0   # 마지막 캐릭터 방울 이후 생성한 일반 방울 수
 var character_threshold: int = 0       # 이번에 몇 개마다 캐릭터를 낼지(6~8)
 var star_count: int = 0
-var use_louie: bool = true             # 루이/토토 번갈아 등장용
+var use_rui: bool = true               # 루이/토토 번갈아 등장용
 
 func _ready() -> void:
 	_reset_character_threshold()
@@ -45,9 +45,9 @@ func spawn_bubble() -> void:
 	bubbles_since_character += 1
 	# 보장형 카운터: 순수 랜덤이 아니라 6~8개마다 캐릭터 방울 1개 확정
 	if bubbles_since_character >= character_threshold:
-		var who := "louie" if use_louie else "toto"
+		var who := "rui" if use_rui else "toto"
 		b.setup_character(who)
-		use_louie = not use_louie
+		use_rui = not use_rui
 		bubbles_since_character = 0
 		_reset_character_threshold()
 	# 방울의 popped 시그널을 구독(A4 인터페이스 계약)

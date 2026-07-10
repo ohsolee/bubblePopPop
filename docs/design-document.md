@@ -63,9 +63,9 @@ Main (Node2D)                      ← main.gd 부착
 ├── BubbleContainer (Node2D)       ← 생성된 방울들이 붙는 부모
 ├── SpawnTimer (Timer)             ← wait_time 1.2초, autostart ON
 └── UILayer (CanvasLayer)
-    └── StarCounter (HBoxContainer)
-        ├── StarIcon (TextureRect)
-        └── CountLabel (Label)
+	└── StarCounter (HBoxContainer)
+		├── StarIcon (TextureRect)
+		└── CountLabel (Label)
 ```
 
 ### Bubble.tscn (방울 1개 = 씬 1개, 코드로 인스턴싱)
@@ -89,7 +89,7 @@ PopEffect (CPUParticles2D)         ← one_shot ON, emitting ON
 
 ---
 
-## 3. 로직 설계 (아내 담당 영역)
+## 3. 로직 설계 (율미 담당 영역)
 
 ### main.gd
 
@@ -103,22 +103,22 @@ PopEffect (CPUParticles2D)         ← one_shot ON, emitting ON
 
 SpawnTimer.timeout 시그널 →
   spawn_bubble():
-    var b = bubble_scene.instantiate()
-    b.position = Vector2(randf_range(80, 640), 1360)   # 화면 아래 바깥
-    bubbles_since_character += 1
-    if bubbles_since_character >= randi_range(6, 8):
-        b.setup_character("louie" 또는 "toto" 번갈아)
-        bubbles_since_character = 0
-    b.popped.connect(_on_bubble_popped)               # 커스텀 시그널 구독
-    BubbleContainer.add_child(b)
+	var b = bubble_scene.instantiate()
+	b.position = Vector2(randf_range(80, 640), 1360)   # 화면 아래 바깥
+	bubbles_since_character += 1
+	if bubbles_since_character >= randi_range(6, 8):
+		b.setup_character("louie" 또는 "toto" 번갈아)
+		bubbles_since_character = 0
+	b.popped.connect(_on_bubble_popped)               # 커스텀 시그널 구독
+	BubbleContainer.add_child(b)
 
 _on_bubble_popped(pos: Vector2, is_character: bool):
-    var fx = pop_effect_scene.instantiate()
-    fx.position = pos
-    add_child(fx)
-    if is_character:
-        star_count += 1
-        CountLabel.text = str(star_count)
+	var fx = pop_effect_scene.instantiate()
+	fx.position = pos
+	add_child(fx)
+	if is_character:
+		star_count += 1
+		CountLabel.text = str(star_count)
 ```
 -->
 
@@ -133,32 +133,32 @@ _on_bubble_popped(pos: Vector2, is_character: bool):
 
 SpawnTimer.timeout 시그널 →
   spawn_bubble():
-    var b = bubble_scene.instantiate()
-    # 사방(0=아래,1=위,2=왼쪽,3=오른쪽) 중 랜덤한 변에서 스폰 → 반대편으로 가로지름
-    edge = randi_range(0, 3)
-    match edge:
-      0: spawn_pos = Vector2(randf_range(80,640), 1360),  dir = Vector2.UP     # 아래→위
-      1: spawn_pos = Vector2(randf_range(80,640), -80),   dir = Vector2.DOWN   # 위→아래
-      2: spawn_pos = Vector2(-80, randf_range(120,1160)), dir = Vector2.RIGHT  # 왼→오
-      3: spawn_pos = Vector2(800, randf_range(120,1160)), dir = Vector2.LEFT   # 오→왼
-    dir = dir.rotated(randf_range(-0.3, 0.3))   # 진행 방향 살짝 랜덤(±약 17도)
-    b.position = spawn_pos
-    b.setup_motion(dir)                          # 진행 방향을 방울에 전달
-    bubbles_since_character += 1
-    if bubbles_since_character >= character_threshold:
-        b.setup_character("louie" 또는 "toto" 번갈아)
-        bubbles_since_character = 0
-        character_threshold = randi_range(6, 8)  # 다음 임계치 새로 뽑기
-    b.popped.connect(_on_bubble_popped)               # 커스텀 시그널 구독
-    BubbleContainer.add_child(b)
+	var b = bubble_scene.instantiate()
+	# 사방(0=아래,1=위,2=왼쪽,3=오른쪽) 중 랜덤한 변에서 스폰 → 반대편으로 가로지름
+	edge = randi_range(0, 3)
+	match edge:
+	  0: spawn_pos = Vector2(randf_range(80,640), 1360),  dir = Vector2.UP     # 아래→위
+	  1: spawn_pos = Vector2(randf_range(80,640), -80),   dir = Vector2.DOWN   # 위→아래
+	  2: spawn_pos = Vector2(-80, randf_range(120,1160)), dir = Vector2.RIGHT  # 왼→오
+	  3: spawn_pos = Vector2(800, randf_range(120,1160)), dir = Vector2.LEFT   # 오→왼
+	dir = dir.rotated(randf_range(-0.3, 0.3))   # 진행 방향 살짝 랜덤(±약 17도)
+	b.position = spawn_pos
+	b.setup_motion(dir)                          # 진행 방향을 방울에 전달
+	bubbles_since_character += 1
+	if bubbles_since_character >= character_threshold:
+		b.setup_character("louie" 또는 "toto" 번갈아)
+		bubbles_since_character = 0
+		character_threshold = randi_range(6, 8)  # 다음 임계치 새로 뽑기
+	b.popped.connect(_on_bubble_popped)               # 커스텀 시그널 구독
+	BubbleContainer.add_child(b)
 
 _on_bubble_popped(pos: Vector2, is_character: bool):
-    var fx = pop_effect_scene.instantiate()
-    fx.position = pos
-    add_child(fx)
-    if is_character:
-        star_count += 1
-        CountLabel.text = str(star_count)
+	var fx = pop_effect_scene.instantiate()
+	fx.position = pos
+	add_child(fx)
+	if is_character:
+		star_count += 1
+		CountLabel.text = str(star_count)
 ```
 
 ### bubble.gd
@@ -207,14 +207,14 @@ _process(delta):
   position = base_pos + perp * sin(Time.get_ticks_msec() / 400.0) * sway_amp
   # 화면(720x1280) 밖으로 충분히 나가면 정리(사방 어디로든)
   if position.x < -200 or position.x > 920 or position.y < -200 or position.y > 1480:
-      queue_free()
+	  queue_free()
 
 setup_motion(dir: Vector2):     # Main이 스폰 시 진행 방향을 넘겨줌
   move_dir = dir.normalized()
 
 _on_input_event(viewport, event, shape_idx):
   if event is InputEventScreenTouch and event.pressed:
-      pop()
+	  pop()
   # 마우스 클릭은 프로젝트 설정의 터치 에뮬레이션으로 자동 처리됨
 
 pop():
@@ -224,10 +224,10 @@ pop():
   popped.emit(global_position, is_character)
   PopSound.play()
   if is_character:
-      캐릭터 리액션 재생 (아래 4장, 지용 담당) 후 queue_free()
+	  캐릭터 리액션 재생 (아래 4장, 지용 담당) 후 queue_free()
   else:
-      $BubbleSprite.hide()
-      PopSound가 끝나면 queue_free()    # finished 시그널 활용
+	  $BubbleSprite.hide()
+	  PopSound가 끝나면 queue_free()    # finished 시그널 활용
 
 setup_character(who: String):
   is_character = true
@@ -258,7 +258,7 @@ pop() 안에서:
 캐릭터 방울 팝 시:
   1. BubbleSprite만 사라짐 (팝 연출)
   2. CharacterSprite 폴짝: scale 펀치 + position.y 바운스 2회
-     (TRANS_BOUNCE, EASE_OUT — 언리얼 커브 이징과 동일 개념)
+	 (TRANS_BOUNCE, EASE_OUT — 언리얼 커브 이징과 동일 개념)
   3. 기쁨 효과음 재생
   4. 0.8초 후 페이드아웃 → queue_free()
 ```
@@ -300,9 +300,9 @@ pop() 안에서:
 | 파일 | 소유자 | 상대방은 |
 |------|--------|---------|
 | *.tscn (씬 파일) | 지용 | 수정 금지, 요청만 |
-| *.gd (스크립트) | 아내 | 수정 금지, 요청만 |
+| *.gd (스크립트) | 율미 | 수정 금지, 요청만 |
 | assets/ | 지용 | 자유롭게 참조 |
-| project.godot (설정) | 아내 | 변경 전 상의 |
+| project.godot (설정) | 율미 | 변경 전 상의 |
 
 - 씬↔스크립트를 잇는 **노드 이름 = API**. 바꾸려면 이 문서 먼저 수정 후 통보
 - .tscn은 텍스트 파일이라 Git 머지가 되긴 하지만, 같은 씬 동시 수정은 충돌 지옥 → 소유권으로 원천 차단
@@ -316,7 +316,7 @@ pop() 안에서:
 
 > 각 기능은 독립적으로 테스트 가능한 단위. 번호는 작업 ID로 사용.
 
-### A. 코어 로직 — 아내
+### A. 코어 로직 — 율미
 
 | ID | 기능 | 내용 | 선행 조건 |
 |----|------|------|----------|
@@ -336,7 +336,7 @@ pop() 안에서:
 | B4 | 사운드 | 팝음 / 캐릭터 등장음, 로직에 play() 한 줄씩 | 파일만 준비되면 독립 |
 | B5 | 에셋 제작 | 5장 스프라이트 + 효과음 2개 (5장 참조) | 없음 — A1~A3 진행 중 병렬 |
 
-### C. 인프라 — 아내
+### C. 인프라 — 율미
 
 | ID | 기능 | 내용 | 선행 조건 |
 |----|------|------|----------|
@@ -371,11 +371,11 @@ C1, C2 (셋업)
 
 | 단계 | 내용 | 완료 기준 | 주 담당 |
 |------|------|----------|---------|
-| 0 | 환경 세팅 (Godot 설치, 프로젝트 설정, Git) | 둘 다 프로젝트 열고 실행 가능 | 아내 |
-| 1 | 임시 에셋(원 도형)으로 방울 상승 + 터치 팝 | 클릭하면 사라짐 | 아내 |
+| 0 | 환경 세팅 (Godot 설치, 프로젝트 설정, Git) | 둘 다 프로젝트 열고 실행 가능 | 율미 |
+| 1 | 임시 에셋(원 도형)으로 방울 상승 + 터치 팝 | 클릭하면 사라짐 | 율미 |
 | 2 | 실제 아트 교체 + Tween 팝 연출 + 파티클 | "게임처럼" 보임 | 지용 |
 | 3 | 캐릭터 방울 + 리액션 + 사운드 | 아이 테스트 가능 | 공동 |
-| 4 | 웹 익스포트 + GitHub Pages 배포 | 폰에서 링크로 플레이 | 아내 |
+| 4 | 웹 익스포트 + GitHub Pages 배포 | 폰에서 링크로 플레이 | 율미 |
 
 > 1단계는 **아트 없이** 시작하는 게 핵심. ColorRect나 기본 원으로 로직 먼저 검증하고,
 > 지용은 그동안 에셋 생성 — 병렬 작업으로 서로 안 기다림.
