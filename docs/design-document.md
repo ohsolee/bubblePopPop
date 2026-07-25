@@ -3,9 +3,11 @@
 > "루이, 어디있어?" 본편 전 워밍업 프로젝트
 > 목표: 게임 완성 그 자체보다 **Godot 워크플로우 + 2인 협업 방식 검증**
 >
-> **문서 버전: v0.01**
+> **문서 버전: v0.02**
 
 ### 변경 이력
+- **v0.02** — **메인 메뉴(MainMenu.tscn)** 추가: 앱이 메뉴로 시작하고 "버블" 버튼으로 게임 진입,
+  게임 화면 우상단에 "← 메뉴" 복귀 버튼 추가. 관련 UI 에셋 목록을 5장에 추가.
 - **v0.01** — 방울이 화면 **사방(상/하/좌/우)**에서 나와 반대편으로 가로지르는 방식으로 변경.
   (기존 v0.00은 각 항목에 `<!-- v0.00 ... -->` 주석으로 보존)
 - **v0.00** — 최초 설계. 방울이 화면 아래에서 위로만 떠오름.
@@ -56,16 +58,33 @@
 > ⚠️ 아래 노드 이름과 구조가 두 사람 사이의 **계약**입니다.
 > 스크립트가 이 이름들을 참조하므로, 구조 변경 시 반드시 상대에게 공유.
 
-### Main.tscn (루트 씬)
+### MainMenu.tscn (메인 메뉴 = 앱 시작 화면)  ★ v0.02 추가
+```
+MainMenu (Control)                 ← main_menu.gd 부착
+├── Background (ColorRect)         ← 메뉴 배경 (현재 파스텔 단색, 이미지로 교체 가능)
+└── CenterContainer                ← 화면 중앙 정렬
+    └── VBoxContainer              ← 제목·버튼 세로 배치
+        ├── Title (Label)          ← 게임 제목 "비눗방울 팡팡" (로고 이미지로 교체 가능)
+        ├── Spacer (Control)       ← 제목과 버튼 사이 여백
+        ├── BubbleButton (Button)  ← "버블" → Main.tscn(버블 게임) 시작
+        ├── Button2 (Button)       ← "준비중" (다음 게임용, 현재 비활성)
+        └── Button3 (Button)       ← "준비중" (다음 게임용, 현재 비활성)
+```
+- BubbleButton 클릭 → `change_scene_to_file("res://scenes/Main.tscn")` 로 게임 화면 전환
+- 게임이 늘어나면 VBoxContainer에 버튼 추가 (Button2/Button3 자리 활용)
+- 앱 시작 화면: `project.godot`의 `run/main_scene` = `res://scenes/MainMenu.tscn`
+
+### Main.tscn (버블 게임 화면)
 ```
 Main (Node2D)                      ← main.gd 부착
 ├── Background (Sprite2D)          ← 배경 이미지
 ├── BubbleContainer (Node2D)       ← 생성된 방울들이 붙는 부모
 ├── SpawnTimer (Timer)             ← wait_time 1.2초, autostart ON
 └── UILayer (CanvasLayer)
-	└── StarCounter (HBoxContainer)
-		├── StarIcon (TextureRect)
-		└── CountLabel (Label)
+	├── StarCounter (HBoxContainer)
+	│   ├── StarIcon (TextureRect)
+	│   └── CountLabel (Label)
+	└── MenuButton (Button)        ← "← 메뉴" → MainMenu.tscn 복귀  ★ v0.02 추가
 ```
 
 ### Bubble.tscn (방울 1개 = 씬 1개, 코드로 인스턴싱)
@@ -291,6 +310,22 @@ pop() 안에서:
 
 > 프레임 애니메이션은 이번엔 안 씀. 스프라이트 1장 + Tween으로 전부 해결
 > (제작 비용 최소화 — 본편에서 필요해지면 그때 AnimatedSprite2D 학습)
+
+### 메뉴 / UI 에셋  ★ v0.02 추가
+> 메인 메뉴(MainMenu.tscn)와 버튼, 게임 화면의 "← 메뉴" 버튼이 추가됨.
+> 현재는 전부 **임시**(파스텔 단색 배경 · 텍스트 제목 · 고도 기본 버튼)라, 아래 에셋으로 교체하면 "게임처럼" 보인다.
+
+| 에셋 | 스펙 | 생성 팁 / 현재 상태 |
+|------|------|---------------------|
+| 메뉴 배경 | 720×1280 | 현재 파스텔 단색(하늘색 ColorRect). 게임 배경과 톤 맞춘 이미지로 교체 가능 |
+| 게임 제목 로고 | 가로 ~600px 투명 PNG | 현재 텍스트 Label "비눗방울 팡팡". 손글씨풍 로고 이미지로 바꾸면 감성 UP |
+| 버튼 배경 (일반) | 320×96, 둥근 모서리 (9-slice 권장) | 현재 고도 기본 버튼. normal 상태 |
+| 버튼 배경 (눌림/비활성) | 각 1장 | 눌렀을 때 / 비활성("준비중") 상태용. 색만 살짝 다르게 |
+| "버블" 버튼 아이콘 | 64×64 투명 PNG (선택) | 버튼 안 방울 아이콘. 텍스트만 써도 무방 |
+| "← 메뉴" 버튼 | 아이콘 64×64 또는 텍스트 | 게임 화면 우상단 복귀 버튼. 현재 텍스트 "← 메뉴" |
+
+> 버튼 상태 이미지는 Godot의 **StyleBox / Theme** 로 연결한다 (지용이 씬에서 설정).
+> 급하면 배경 이미지 없이 **색·폰트만 Theme로 바꿔도** 충분히 예뻐짐 — 이미지 제작은 선택.
 
 ---
 

@@ -15,6 +15,11 @@ var use_rui: bool = true               # 루이/토토 번갈아 등장용
 func _ready() -> void:
 	_reset_character_threshold()
 	$SpawnTimer.timeout.connect(_on_spawn_timer_timeout)
+	$UILayer/MenuButton.pressed.connect(_on_menu_button_pressed)
+
+func _on_menu_button_pressed() -> void:
+	# 메인 메뉴 화면(MainMenu.tscn)으로 돌아간다
+	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
 
 func _on_spawn_timer_timeout() -> void:
 	spawn_bubble()
