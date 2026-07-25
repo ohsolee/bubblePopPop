@@ -63,12 +63,12 @@
 MainMenu (Control)                 ← main_menu.gd 부착
 ├── Background (ColorRect)         ← 메뉴 배경 (현재 파스텔 단색, 이미지로 교체 가능)
 └── CenterContainer                ← 화면 중앙 정렬
-    └── VBoxContainer              ← 제목·버튼 세로 배치
-        ├── Title (Label)          ← 게임 제목 "비눗방울 팡팡" (로고 이미지로 교체 가능)
-        ├── Spacer (Control)       ← 제목과 버튼 사이 여백
-        ├── BubbleButton (Button)  ← "버블" → Main.tscn(버블 게임) 시작
-        ├── Button2 (Button)       ← "준비중" (다음 게임용, 현재 비활성)
-        └── Button3 (Button)       ← "준비중" (다음 게임용, 현재 비활성)
+	└── VBoxContainer              ← 제목·버튼 세로 배치
+		├── Title (Label)          ← 게임 제목 "비눗방울 팡팡" (로고 이미지로 교체 가능)
+		├── Spacer (Control)       ← 제목과 버튼 사이 여백
+		├── BubbleButton (Button)  ← "버블" → Main.tscn(버블 게임) 시작
+		├── Button2 (Button)       ← "준비중" (다음 게임용, 현재 비활성)
+		└── Button3 (Button)       ← "준비중" (다음 게임용, 현재 비활성)
 ```
 - BubbleButton 클릭 → `change_scene_to_file("res://scenes/Main.tscn")` 로 게임 화면 전환
 - 게임이 늘어나면 VBoxContainer에 버튼 추가 (Button2/Button3 자리 활용)

@@ -1,0 +1,39 @@
+name: Deploy Web Build
+
+# main 브랜치에 push할 때마다 자동으로:
+#   1) Godot 웹 익스포트 실행
+#   2) 결과물을 gh-pages 브랜치에 배포
+# → https://ohsolee.github.io/bubblePopPop/ 가 자동으로 최신화됨
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Actions 탭에서 수동 실행 버튼도 사용 가능
+
+permissions:
+  contents: write # gh-pages 브랜치에 push하기 위한 권한
+
+jobs:
+  export-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.7.0
+          use-dotnet: false
+          include-templates: true
+
+      - name: Export Web build
+        run: |
+          mkdir -p build/web
+          godot --headless --path . --export-release "Web" build/web/index.html
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web

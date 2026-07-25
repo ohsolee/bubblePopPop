@@ -2,5 +2,8 @@
 .godot/
 /android/
 
+# 웹 익스포트 결과물 (로컬 빌드 — gh-pages 브랜치로 배포)
+/build/
+
 # Claude Code local settings
 .claude/
