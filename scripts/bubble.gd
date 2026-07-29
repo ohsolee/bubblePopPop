@@ -5,12 +5,16 @@ extends Area2D
 ## CollisionShape2D / PopSound)를 전제로 한다.
 
 ## 방울이 터졌을 때 Main에게 알리는 커스텀 시그널.
-## pos = 터진 위치(파티클 생성용), is_character = 캐릭터 방울 여부(별 카운트용)
-signal popped(pos: Vector2, is_character: bool)
+## pos = 터진 위치(파티클 생성용), character_type = "" (일반) / "rui" / "toto"
+signal popped(pos: Vector2, character_type: String)
+
+const BBOK_SOUND: AudioStream = preload("res://assets/audio/bbok.wav")
+const RUI_SOUND: AudioStream = preload("res://assets/audio/rui.wav")
+const TOTO_SOUND: AudioStream = preload("res://assets/audio/toto.wav")
 
 var speed: float = 0.0        # 진행 속도(px/초)
 var sway_amp: float = 0.0     # 살랑임 폭
-var is_character: bool = false
+var character_type: String = ""       # "" = 일반 방울, "rui" / "toto" = 캐릭터 방울
 var is_popped: bool = false   # 중복 터치 방지 가드
 var move_dir: Vector2 = Vector2.UP    # 진행 방향(단위 벡터). 스폰 시 Main이 지정
 var base_pos: Vector2 = Vector2.ZERO  # 살랑임의 기준이 되는 중심 위치
@@ -43,17 +47,27 @@ func pop() -> void:
 	is_popped = true
 	# 물리 처리 중 충돌을 즉시 끄면 오류가 나므로 안전한 타이밍에 끈다
 	$CollisionShape2D.set_deferred("disabled", true)
-	popped.emit(global_position, is_character)
-	# 사운드/파티클/Tween 연출은 이후 B 단계(지용)에서 추가.
-	# 지금은 최소 루프라 바로 정리한다.
-	queue_free()
+	popped.emit(global_position, character_type)
+	$BubbleSprite.hide()
+	$CharacterSprite.hide()
+	set_process(false)    # 팝 후에는 이동/살랑임 계산 중단
+	# 방울 종류에 맞는 사운드 선택: 일반=bbok, 루이=rui, 토토=toto
+	var sound := BBOK_SOUND
+	if character_type == "rui":
+		sound = RUI_SOUND
+	elif character_type == "toto":
+		sound = TOTO_SOUND
+	$PopSound.stream = sound
+	$PopSound.play()
+	# 사운드가 끝날 때까지 기다렸다가 정리(끊기지 않게)
+	$PopSound.finished.connect(queue_free)
 
 func setup_motion(dir: Vector2) -> void:
 	# Main이 스폰할 때 진행 방향을 넘겨준다.
 	move_dir = dir.normalized()
 
 func setup_character(who: String) -> void:
-	is_character = true
+	character_type = who
 	if who == "rui":
 		# 씬(Bubble.tscn)에 지정된 루이(Rui) 이미지를 버블 위에 표시
 		$CharacterSprite.show()

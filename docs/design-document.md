@@ -3,9 +3,11 @@
 > "루이, 어디있어?" 본편 전 워밍업 프로젝트
 > 목표: 게임 완성 그 자체보다 **Godot 워크플로우 + 2인 협업 방식 검증**
 >
-> **문서 버전: v0.02**
+> **문서 버전: v0.03**
 
 ### 변경 이력
+- **v0.03** — 별 카운터 1개 → **루이/토토 개별 카운터**로 분리(왼쪽 위, 기존 별 아이콘 이미지는 제거하고 텍스트로).
+  방울 팝 사운드 추가: 일반 방울 `bbok.wav`, 루이 방울 `rui.wav`, 토토 방울 `toto.wav` (사운드가 끝난 뒤 정리).
 - **v0.02** — **메인 메뉴(MainMenu.tscn)** 추가: 앱이 메뉴로 시작하고 "버블" 버튼으로 게임 진입,
   게임 화면 우상단에 "← 메뉴" 복귀 버튼 추가. 관련 UI 에셋 목록을 5장에 추가.
 - **v0.01** — 방울이 화면 **사방(상/하/좌/우)**에서 나와 반대편으로 가로지르는 방식으로 변경.
@@ -81,11 +83,23 @@ Main (Node2D)                      ← main.gd 부착
 ├── BubbleContainer (Node2D)       ← 생성된 방울들이 붙는 부모
 ├── SpawnTimer (Timer)             ← wait_time 1.2초, autostart ON
 └── UILayer (CanvasLayer)
-	├── StarCounter (HBoxContainer)
-	│   ├── StarIcon (TextureRect)
-	│   └── CountLabel (Label)
+	├── CounterBox (VBoxContainer)  ★ v0.03: 별 카운터 → 루이/토토 개별 카운터로 교체
+	│   ├── RuiCounter (HBoxContainer)
+	│   │   ├── RuiLabel (Label)      ← 텍스트 "루이" (아이콘 이미지 없음)
+	│   │   └── RuiCountLabel (Label) ← 루이 방울 터뜨린 횟수
+	│   └── TotoCounter (HBoxContainer)
+	│       ├── TotoLabel (Label)      ← 텍스트 "토토"
+	│       └── TotoCountLabel (Label) ← 토토 방울 터뜨린 횟수
 	└── MenuButton (Button)        ← "← 메뉴" → MainMenu.tscn 복귀  ★ v0.02 추가
 ```
+<!-- v0.00~v0.02 (구버전) — 별 아이콘 + 숫자 하나로 통합 카운트
+```
+UILayer (CanvasLayer)
+├── StarCounter (HBoxContainer)
+│   ├── StarIcon (TextureRect)
+│   └── CountLabel (Label)
+```
+-->
 
 ### Bubble.tscn (방울 1개 = 씬 1개, 코드로 인스턴싱)
 ```
@@ -93,8 +107,11 @@ Bubble (Area2D)                    ← bubble.gd 부착
 ├── BubbleSprite (Sprite2D)        ← 비눗방울 이미지
 ├── CharacterSprite (Sprite2D)     ← 루이/토토 (기본 hidden)
 ├── CollisionShape2D               ← CircleShape2D, 스프라이트보다 20% 크게 (유아 터치 판정 넉넉히)
-└── PopSound (AudioStreamPlayer2D)
+└── PopSound (AudioStreamPlayer2D) ← 팝 사운드 재생용. stream은 코드가 팝 순간에 지정(고정 아님)
 ```
+> ★ v0.03: PopSound에 미리 사운드를 넣지 않는다. `bubble.gd`가 pop() 시점에
+> 방울 종류(일반/루이/토토)에 맞는 사운드를 골라 `stream`에 넣고 재생한다.
+> `assets/audio/bbok.wav`(일반) · `rui.wav`(루이) · `toto.wav`(토토)
 
 > 언리얼로 치면: Bubble.tscn = Blueprint 클래스, 인스턴싱 = SpawnActor,
 > Area2D의 input_event = OnClicked 이벤트, 시그널 = Event Dispatcher
@@ -180,6 +197,10 @@ _on_bubble_popped(pos: Vector2, is_character: bool):
 		CountLabel.text = str(star_count)
 ```
 
+> **v0.03 변경점** — `is_character: bool` → **`character_type: String`** ("" / "rui" / "toto")로 교체.
+> `setup_character("louie" 또는 "toto")` → `setup_character("rui" 또는 "toto")`.
+> `_on_bubble_popped(pos, character_type)`: `character_type == "rui"`면 RuiCountLabel, `"toto"`면 TotoCountLabel 증가.
+
 ### bubble.gd
 
 <!-- v0.00 (구버전) — 위로 상승 + 좌우 sin 흔들림
@@ -253,6 +274,30 @@ setup_character(who: String):
   CharacterSprite에 해당 텍스처 지정 후 show()
 ```
 
+> **v0.03 변경점** — 사운드 3종 추가 및 `character_type` 도입:
+> ```
+> const BBOK_SOUND = preload("res://assets/audio/bbok.wav")
+> const RUI_SOUND  = preload("res://assets/audio/rui.wav")
+> const TOTO_SOUND = preload("res://assets/audio/toto.wav")
+> var character_type: String = ""   # is_character bool 대체. "" / "rui" / "toto"
+>
+> pop():
+>   ...(중복 가드·콜리전 비활성·popped.emit은 동일)...
+>   $BubbleSprite.hide()
+>   $CharacterSprite.hide()
+>   set_process(false)                       # 팝 후 이동 계산 중단
+>   sound = BBOK_SOUND
+>   if character_type == "rui": sound = RUI_SOUND
+>   elif character_type == "toto": sound = TOTO_SOUND
+>   $PopSound.stream = sound
+>   $PopSound.play()
+>   $PopSound.finished.connect(queue_free)   # 사운드 끝난 뒤 정리(끊기지 않게)
+>
+> setup_character(who):
+>   character_type = who   # "rui" 또는 "toto"
+>   ...(이하 동일: rui면 CharacterSprite 표시, 아니면 임시 노란 틴트)...
+> ```
+
 ### 프로젝트 설정 체크리스트 (환경 세팅)
 - [ ] 프로젝트 설정 → Display → Window: 720×1280, Stretch Mode `canvas_items`, Aspect `expand`
 - [ ] Input Devices → Pointing → **Emulate Touch From Mouse ON** (PC에서 마우스로 테스트 가능)
@@ -308,6 +353,8 @@ pop() 안에서:
 | 팝 효과음 | 0.2~0.5초, 부드러운 "퐁" | 날카로운 소리 금지 (유아) |
 | 캐릭터 등장음 | 1초 내외 까르르/딸랑 | |
 
+> ★ v0.03: 팝 사운드 3종 완료 → `assets/audio/bbok.wav`(일반) · `rui.wav`(루이) · `toto.wav`(토토)
+
 > 프레임 애니메이션은 이번엔 안 씀. 스프라이트 1장 + Tween으로 전부 해결
 > (제작 비용 최소화 — 본편에서 필요해지면 그때 AnimatedSprite2D 학습)
 
@@ -359,7 +406,7 @@ pop() 안에서:
 | A2 | 방울 이동 | <!--v0.00: 상승 + sin 좌우 흔들림--> **v0.01:** move_dir 방향 이동 + 진행 방향 수직 sin 살랑임, 화면 사방 이탈 시 queue_free | A1 |
 | A3 | 터치 판정 | Area2D input_event, 터치/마우스 겸용, is_popped 중복 가드 | A2 |
 | A4 | 팝 상태 처리 | 콜리전 비활성화, `popped` 시그널 발신, 일반/캐릭터 분기 | A3 |
-| A5 | 별 카운터 | popped 구독 → 캐릭터일 때만 카운트, Label 갱신 | A4 |
+| A5 | 루이/토토 카운터 | popped 구독 → character_type별로 각자 카운트, Label 갱신 (v0.03: 별 카운터 1개 → 개별 카운터로 분리) | A4 |
 
 ### B. 연출/피드백 — 지용
 

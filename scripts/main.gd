@@ -1,7 +1,7 @@
 extends Node2D
-## 루트 씬. SpawnTimer마다 방울을 만들고, 방울이 터지면 별을 센다.
+## 루트 씬. SpawnTimer마다 방울을 만들고, 루이/토토 방울이 터지면 각각 카운트한다.
 ## 설계서 2장의 Main.tscn 노드 구조(BubbleContainer / SpawnTimer /
-## UILayer/StarCounter/CountLabel)를 전제로 한다.
+## UILayer/CounterBox/RuiCounter,TotoCounter)를 전제로 한다.
 
 var bubble_scene: PackedScene = preload("res://scenes/Bubble.tscn")
 # 파티클 씬은 B 단계(지용)에서 만들면 아래 주석을 풀어 사용
@@ -9,7 +9,8 @@ var bubble_scene: PackedScene = preload("res://scenes/Bubble.tscn")
 
 var bubbles_since_character: int = 0   # 마지막 캐릭터 방울 이후 생성한 일반 방울 수
 var character_threshold: int = 0       # 이번에 몇 개마다 캐릭터를 낼지(6~8)
-var star_count: int = 0
+var rui_count: int = 0
+var toto_count: int = 0
 var use_rui: bool = true               # 루이/토토 번갈아 등장용
 
 func _ready() -> void:
@@ -59,12 +60,15 @@ func spawn_bubble() -> void:
 	b.popped.connect(_on_bubble_popped)
 	$BubbleContainer.add_child(b)
 
-func _on_bubble_popped(_pos: Vector2, is_character: bool) -> void:
+func _on_bubble_popped(_pos: Vector2, character_type: String) -> void:
 	# 연출/파티클은 B 단계에서 _pos를 활용해 추가.
-	# 지금은 캐릭터 방울일 때만 별 카운트(A5).
-	if is_character:
-		star_count += 1
-		$UILayer/StarCounter/CountLabel.text = str(star_count)
+	# 루이/토토 방울을 터뜨렸을 때만 각자의 카운터 증가(A5).
+	if character_type == "rui":
+		rui_count += 1
+		$UILayer/CounterBox/RuiCounter/RuiCountLabel.text = str(rui_count)
+	elif character_type == "toto":
+		toto_count += 1
+		$UILayer/CounterBox/TotoCounter/TotoCountLabel.text = str(toto_count)
 
 func _reset_character_threshold() -> void:
 	character_threshold = randi_range(6, 8)

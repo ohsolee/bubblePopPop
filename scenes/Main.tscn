@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="Texture2D" uid="uid://c12u30ama0xbe" path="res://icon.svg" id="2_star"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -17,23 +16,40 @@ autostart = true
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 
-[node name="StarCounter" type="HBoxContainer" parent="UILayer"]
+[node name="CounterBox" type="VBoxContainer" parent="UILayer"]
 offset_left = 24.0
 offset_top = 24.0
 offset_right = 240.0
-offset_bottom = 96.0
+offset_bottom = 140.0
+theme_override_constants/separation = 8
+
+[node name="RuiCounter" type="HBoxContainer" parent="UILayer/CounterBox"]
+layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="StarIcon" type="TextureRect" parent="UILayer/StarCounter"]
-custom_minimum_size = Vector2(56, 56)
+[node name="RuiLabel" type="Label" parent="UILayer/CounterBox/RuiCounter"]
 layout_mode = 2
-texture = ExtResource("2_star")
-expand_mode = 1
-stretch_mode = 5
+theme_override_font_sizes/font_size = 36
+text = "루이"
 
-[node name="CountLabel" type="Label" parent="UILayer/StarCounter"]
+[node name="RuiCountLabel" type="Label" parent="UILayer/CounterBox/RuiCounter"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 48
+theme_override_font_sizes/font_size = 36
+text = "0"
+vertical_alignment = 1
+
+[node name="TotoCounter" type="HBoxContainer" parent="UILayer/CounterBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TotoLabel" type="Label" parent="UILayer/CounterBox/TotoCounter"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "토토"
+
+[node name="TotoCountLabel" type="Label" parent="UILayer/CounterBox/TotoCounter"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
 text = "0"
 vertical_alignment = 1
 
