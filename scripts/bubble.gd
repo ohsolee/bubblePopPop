@@ -1,6 +1,6 @@
 extends Area2D
-## 방울 1개. 화면 사방(상/하/좌/우) 바깥에서 나타나 반대편으로 가로지르며,
-## 진행 방향에 수직으로 살랑이고, 터치하면 팡 사라진다.
+## 방울 1개(버블 게임 전용). 화면 사방(상/하/좌/우) 바깥에서 나타나 반대편으로
+## 두둥실 가로지르며, 터치하면 팡 사라진다.
 ## 설계서 2장의 Bubble.tscn 노드 구조(BubbleSprite / CharacterSprite /
 ## CollisionShape2D / PopSound)를 전제로 한다.
 
@@ -24,10 +24,10 @@ var move_dir: Vector2 = Vector2.UP    # 진행 방향(단위 벡터). 스폰 시
 var base_pos: Vector2 = Vector2.ZERO  # 살랑임의 기준이 되는 중심 위치
 
 func _ready() -> void:
-	speed = randf_range(45.0, 85.0)          # 기존(120~200)보다 훨씬 느리게 → 두둥실
-	sway_amp = randf_range(35.0, 60.0)       # 큰 흔들림은 더 넉넉하게
-	sway_period = randf_range(900.0, 1400.0) # 느긋한 주기로 여유 있게 살랑
-	wobble_amp = randf_range(8.0, 16.0)      # 작은 잔떨림(비눗방울 특유의 흔들림)
+	speed = randf_range(45.0, 85.0)
+	sway_amp = randf_range(35.0, 60.0)
+	sway_period = randf_range(900.0, 1400.0)
+	wobble_amp = randf_range(8.0, 16.0)
 	wobble_period = randf_range(250.0, 400.0)
 	time_offset = randf_range(0.0, 1000.0)
 	base_pos = position
@@ -59,9 +59,18 @@ func pop() -> void:
 	# 물리 처리 중 충돌을 즉시 끄면 오류가 나므로 안전한 타이밍에 끈다
 	$CollisionShape2D.set_deferred("disabled", true)
 	popped.emit(global_position, character_type)
-	$BubbleSprite.hide()
-	$CharacterSprite.hide()
 	set_process(false)    # 팝 후에는 이동/살랑임 계산 중단
+	if character_type != "":
+		# 루이/토토 방울: 살짝 확대됐다가 사라짐
+		var tw := create_tween()
+		tw.tween_property(self, "scale", scale * 1.35, 0.12)
+		tw.tween_callback(func():
+			$BubbleSprite.hide()
+			$CharacterSprite.hide()
+		)
+	else:
+		$BubbleSprite.hide()
+		$CharacterSprite.hide()
 	# 방울 종류에 맞는 사운드 선택: 일반=bbok, 루이=rui, 토토=toto
 	var sound := BBOK_SOUND
 	if character_type == "rui":

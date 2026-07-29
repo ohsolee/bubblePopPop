@@ -49,12 +49,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 44
 text = "버블"
 
-[node name="Button2" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="BbangButton" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(320, 96)
 layout_mode = 2
-disabled = true
 theme_override_font_sizes/font_size = 44
-text = "준비중"
+text = "빠방"
 
 [node name="Button3" type="Button" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(320, 96)

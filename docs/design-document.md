@@ -3,9 +3,17 @@
 > "루이, 어디있어?" 본편 전 워밍업 프로젝트
 > 목표: 게임 완성 그 자체보다 **Godot 워크플로우 + 2인 협업 방식 검증**
 >
-> **문서 버전: v0.03**
+> **문서 버전: v0.05**
 
 ### 변경 이력
+- **v0.05** — 빠방을 **비눗방울 모양에서 실제 탈것 이미지**로 전면 교체.
+  **Vehicle.tscn/vehicle.gd** 신설(`class_name Vehicle`), 9종을 영문 enum `VehicleType`으로 관리:
+  `POLICE_CAR`(경찰차) · `AMBULANCE`(구급차) · `BULLDOZER`(불도저) · `TRUCK`(트럭) ·
+  `TAYO`(타요) · `ROGI`(로기) · `GANI`(가니) · `LANI`(라니) · `CITU`(씨투) — 꼬마버스 타요 영문 공식 표기.
+  실제 그림은 `assets/sprites/spr_<영문명>.png`로 넣으면 자동 적용(5장 참고), 그림이 없으면 종류별 색 임시 표시.
+  `bbang.gd`가 이 9종을 랜덤 스폰(VehicleContainer). 루이/토토 개별 카운터 UI는 빠방에서 제거(해당 없음).
+  이에 따라 `bubble.gd`의 v0.04 MotionMode(빠방용)는 더 이상 쓰이지 않아 제거 — 버블 게임 전용으로 원복.
+- **v0.04** — 메인 메뉴 두 번째 버튼 **"빠방"** 활성화 → Bbang.tscn/bbang.gd 신설 (이후 v0.05에서 방울→탈것으로 교체됨).
 - **v0.03** — 별 카운터 1개 → **루이/토토 개별 카운터**로 분리(왼쪽 위, 기존 별 아이콘 이미지는 제거하고 텍스트로).
   방울 팝 사운드 추가: 일반 방울 `bbok.wav`, 루이 방울 `rui.wav`, 토토 방울 `toto.wav` (사운드가 끝난 뒤 정리).
 - **v0.02** — **메인 메뉴(MainMenu.tscn)** 추가: 앱이 메뉴로 시작하고 "버블" 버튼으로 게임 진입,
@@ -69,11 +77,12 @@ MainMenu (Control)                 ← main_menu.gd 부착
 		├── Title (Label)          ← 게임 제목 "비눗방울 팡팡" (로고 이미지로 교체 가능)
 		├── Spacer (Control)       ← 제목과 버튼 사이 여백
 		├── BubbleButton (Button)  ← "버블" → Main.tscn(버블 게임) 시작
-		├── Button2 (Button)       ← "준비중" (다음 게임용, 현재 비활성)
+		├── BbangButton (Button)   ← "빠방" → Bbang.tscn 시작  ★ v0.04: 활성화(기존 Button2)
 		└── Button3 (Button)       ← "준비중" (다음 게임용, 현재 비활성)
 ```
 - BubbleButton 클릭 → `change_scene_to_file("res://scenes/Main.tscn")` 로 게임 화면 전환
-- 게임이 늘어나면 VBoxContainer에 버튼 추가 (Button2/Button3 자리 활용)
+- BbangButton 클릭 → `change_scene_to_file("res://scenes/Bbang.tscn")` 로 빠방 화면 전환
+- 게임이 늘어나면 VBoxContainer에 버튼 추가 (Button3 자리 활용)
 - 앱 시작 화면: `project.godot`의 `run/main_scene` = `res://scenes/MainMenu.tscn`
 
 ### Main.tscn (버블 게임 화면)
@@ -100,6 +109,28 @@ UILayer (CanvasLayer)
 │   └── CountLabel (Label)
 ```
 -->
+
+### Bbang.tscn (빠방 화면)  ★ v0.04 신설, v0.05에서 방울→탈것으로 교체
+```
+Bbang (Node2D)                     ← bbang.gd 부착
+├── Background (Sprite2D)
+├── VehicleContainer (Node2D)      ← 생성된 탈것들이 붙는 부모  ★ v0.05: BubbleContainer에서 개명
+├── SpawnTimer (Timer)             ← wait_time 1.2초, autostart ON
+└── UILayer (CanvasLayer)
+	└── MenuButton (Button)         ← "← 메뉴" → MainMenu.tscn 복귀
+```
+> v0.05부터 `bbang.gd`는 Bubble.tscn 대신 **Vehicle.tscn**을 인스턴싱한다(아래 참고).
+> 루이/토토 카운터는 빠방에 해당 없어 제거됨.
+
+### Vehicle.tscn (탈것 1개 = 씬 1개, 코드로 인스턴싱)  ★ v0.05 신설
+```
+Vehicle (Area2D)                   ← vehicle.gd 부착
+├── VehicleSprite (Sprite2D)       ← 탈것 이미지(그림 없으면 종류별 색 임시 표시)
+├── CollisionShape2D               ← CircleShape2D, radius 90 (유아 터치 판정 넉넉히)
+└── PopSound (AudioStreamPlayer2D) ← 터치 시 bbok.wav 재생
+```
+> `vehicle.gd`의 `VehicleType` enum(9종)과 실제 이미지 파일명 매핑은 5장 참고.
+> Bubble.tscn과 달리 CharacterSprite 개념 없음 — 탈것 하나당 이미지 하나.
 
 ### Bubble.tscn (방울 1개 = 씬 1개, 코드로 인스턴싱)
 ```
@@ -373,6 +404,24 @@ pop() 안에서:
 
 > 버튼 상태 이미지는 Godot의 **StyleBox / Theme** 로 연결한다 (지용이 씬에서 설정).
 > 급하면 배경 이미지 없이 **색·폰트만 Theme로 바꿔도** 충분히 예뻐짐 — 이미지 제작은 선택.
+
+### 빠방 탈것 에셋  ★ v0.05 추가
+> 아래 **파일명 그대로** `assets/sprites/`에 넣으면 `vehicle.gd`가 코드 수정 없이 자동으로 적용한다.
+> 저작권 있는 캐릭터(타요 시리즈)라 AI 생성 시 공식 이미지를 그대로 복제하지 않도록 주의 — 팬아트 스타일 참고 정도로.
+
+| 영문 변수명(enum) | 한글명 | 파일명 | 스펙 |
+|---|---|---|---|
+| POLICE_CAR | 경찰차 | `spr_police_car.png` | 투명 PNG, 옆에서 본 모습 권장 |
+| AMBULANCE | 구급차 | `spr_ambulance.png` | 〃 |
+| BULLDOZER | 불도저 | `spr_bulldozer.png` | 〃 |
+| TRUCK | 트럭 | `spr_truck.png` | 〃 |
+| TAYO | 타요 | `spr_tayo.png` | 꼬마버스 타요 영문 공식 표기 |
+| ROGI | 로기 | `spr_rogi.png` | 〃 |
+| GANI | 가니 | `spr_gani.png` | 〃 |
+| LANI | 라니 | `spr_lani.png` | 〃 |
+| CITU | 씨투 | `spr_citu.png` | 〃 (Cito로 표기되기도 함) |
+
+> 현재(그림 없는 상태)는 종류별 색으로만 구분되는 임시 표시. 파일을 넣으면 즉시 실제 그림으로 바뀐다.
 
 ---
 

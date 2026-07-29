@@ -4,7 +4,12 @@ extends Control
 
 func _ready() -> void:
 	$CenterContainer/VBoxContainer/BubbleButton.pressed.connect(_on_bubble_button_pressed)
+	$CenterContainer/VBoxContainer/BbangButton.pressed.connect(_on_bbang_button_pressed)
 
 func _on_bubble_button_pressed() -> void:
 	# 버블 게임 화면(Main.tscn)으로 전환
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")
+
+func _on_bbang_button_pressed() -> void:
+	# 빠방 화면(Bbang.tscn)으로 전환
+	get_tree().change_scene_to_file("res://scenes/Bbang.tscn")

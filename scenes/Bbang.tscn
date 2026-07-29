@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/bbang.gd" id="1_bbang"]
+
+[node name="Bbang" type="Node2D"]
+script = ExtResource("1_bbang")
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(360, 640)
+
+[node name="VehicleContainer" type="Node2D" parent="."]
+
+[node name="SpawnTimer" type="Timer" parent="."]
+wait_time = 1.2
+autostart = true
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="MenuButton" type="Button" parent="UILayer"]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 84.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 32
+text = "← 메뉴"
