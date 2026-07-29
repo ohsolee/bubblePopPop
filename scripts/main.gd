@@ -46,6 +46,8 @@ func spawn_bubble() -> void:
 			dir = Vector2.LEFT
 	# 진행 방향을 살짝 랜덤하게 틀어 움직임을 다양하게(±약 17도)
 	dir = dir.rotated(randf_range(-0.3, 0.3))
+	# 비눗방울 특유의 부력: 어느 방향에서 나오든 은은하게 위로 뜨는 느낌을 더함
+	dir = (dir + Vector2.UP * 0.35).normalized()
 	b.position = spawn_pos
 	b.setup_motion(dir)
 	bubbles_since_character += 1
