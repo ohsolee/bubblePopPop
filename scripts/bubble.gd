@@ -61,6 +61,15 @@ func pop() -> void:
 	if is_popped:
 		return                 # 이미 터졌으면 무시(중복 가드)
 	is_popped = true
+	# 사운드는 클릭과 동시에 바로 들리도록 다른 처리보다 맨 먼저 재생한다
+	# (아래 tween 생성/시그널 emit 등을 먼저 하면 그만큼 재생이 밀려서 늦게 들린다)
+	var sound := BBOK_SOUND
+	if character_type == "rui":
+		sound = RUI_SOUND
+	elif character_type == "toto":
+		sound = TOTO_SOUND
+	$PopSound.stream = sound
+	$PopSound.play()
 	# 물리 처리 중 충돌을 즉시 끄면 오류가 나므로 안전한 타이밍에 끈다
 	$CollisionShape2D.set_deferred("disabled", true)
 	popped.emit(global_position, character_type)
@@ -78,14 +87,6 @@ func pop() -> void:
 	else:
 		$CharacterSprite.hide()
 		$TotoSprite.hide()
-	# 방울 종류에 맞는 사운드 선택: 일반=bbok, 루이=rui, 토토=toto
-	var sound := BBOK_SOUND
-	if character_type == "rui":
-		sound = RUI_SOUND
-	elif character_type == "toto":
-		sound = TOTO_SOUND
-	$PopSound.stream = sound
-	$PopSound.play()
 	# 사운드/인형 연출 중 더 오래 걸리는 쪽이 끝날 때까지 기다렸다가 정리(끊기지 않게)
 	if char_tw != null:
 		char_tw.finished.connect(queue_free)

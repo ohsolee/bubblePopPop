@@ -12,6 +12,7 @@ radius = 72.75
 script = ExtResource("1_bubble")
 
 [node name="BubbleSprite" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.7)
 scale = Vector2(0.3375, 0.3375)
 texture = ExtResource("2_bubble_tex")
 
