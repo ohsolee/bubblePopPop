@@ -38,8 +38,6 @@ func _ready() -> void:
 	pop_seed = randf_range(0.0, TAU)
 	# 실제 표시되는 스프라이트 크기 기준으로 팝 연출 반지름 산출
 	pop_radius = $BubbleSprite.texture.get_size().x * $BubbleSprite.scale.x * 0.5
-	# Area2D의 터치/클릭 이벤트를 아래 함수에 연결
-	input_event.connect(_on_input_event)
 
 func _process(delta: float) -> void:
 	# 진행 방향으로 중심을 이동(저속 = 두둥실 뜨는 느낌)
