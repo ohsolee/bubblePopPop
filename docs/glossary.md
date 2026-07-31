@@ -1,6 +1,6 @@
 루이 - rui
 토토 - toto
-버블 - bubble
+버블 - baubble
 
 # 버블 화면 이미지 변수명 (Bubble.tscn)
 방울 이미지(노드명) - BubbleSprite (파일: spr_bubble.png)

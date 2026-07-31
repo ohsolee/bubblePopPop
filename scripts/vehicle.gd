@@ -51,6 +51,19 @@ const PLACEHOLDER_COLORS := {
 const PLACEHOLDER_TEX: Texture2D = preload("res://icon.svg")
 const POP_SOUND: AudioStream = preload("res://assets/audio/bbok.wav")
 
+## 종류별 사운드 경로(파일이 없으면 POP_SOUND로 대체)
+const SOUND_PATHS := {
+	VehicleType.POLICE_CAR: "res://assets/audio/snd_police_car.wav",
+	VehicleType.AMBULANCE: "res://assets/audio/snd_ambulance.wav",
+	VehicleType.BULLDOZER: "res://assets/audio/snd_bulldozer.wav",
+	VehicleType.TRUCK: "res://assets/audio/snd_truck.wav",
+	VehicleType.TAYO: "res://assets/audio/snd_tayo.wav",
+	VehicleType.ROGI: "res://assets/audio/snd_rogi.wav",
+	VehicleType.GANI: "res://assets/audio/snd_gani.wav",
+	VehicleType.LANI: "res://assets/audio/snd_lani.wav",
+	VehicleType.CITU: "res://assets/audio/snd_citu.wav",
+}
+
 var vehicle_type: VehicleType = VehicleType.TAYO
 var speed: float = 0.0
 var move_dir: Vector2 = Vector2.RIGHT
@@ -87,7 +100,8 @@ func pop() -> void:
 	popped.emit(global_position, vehicle_type)
 	set_process(false)
 	$VehicleSprite.hide()
-	$PopSound.stream = POP_SOUND
+	var sound_path: String = SOUND_PATHS[vehicle_type]
+	$PopSound.stream = load(sound_path) if ResourceLoader.exists(sound_path) else POP_SOUND
 	$PopSound.play()
 	$PopSound.finished.connect(queue_free)
 
