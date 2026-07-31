@@ -80,17 +80,12 @@ func _ready() -> void:
 		# 아직 그림이 없으므로 종류별 색으로 임시 구분
 		$VehicleSprite.texture = PLACEHOLDER_TEX
 		$VehicleSprite.modulate = PLACEHOLDER_COLORS[vehicle_type]
-	input_event.connect(_on_input_event)
 
 func _process(delta: float) -> void:
 	position += move_dir * speed * delta
 	# 화면(720x1280) 밖으로 충분히 나가면 메모리 정리(사방 어디로든)
 	if position.x < -200.0 or position.x > 920.0 or position.y < -200.0 or position.y > 1480.0:
 		queue_free()
-
-func _on_input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
-	if event is InputEventScreenTouch and event.pressed:
-		pop()
 
 func pop() -> void:
 	if is_popped:

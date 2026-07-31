@@ -24,6 +24,28 @@ func _ready() -> void:
 func _on_menu_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
 
+func _unhandled_input(event: InputEvent) -> void:
+	# 탈것들이 겹쳐 있을 때 터치 지점의 탈것이 전부 동시에 터지지 않도록,
+	# 여기서 한 번에 모아서 맨 위(가장 나중에 그려진 = VehicleContainer 안에서
+	# 형제 인덱스가 가장 큰) 탈것 하나만 터뜨린다.
+	if event is InputEventScreenTouch and event.pressed:
+		_pop_topmost_vehicle_at(get_global_mouse_position())
+
+func _pop_topmost_vehicle_at(world_pos: Vector2) -> void:
+	var params := PhysicsPointQueryParameters2D.new()
+	params.position = world_pos
+	params.collide_with_areas = true
+	params.collide_with_bodies = false
+	var results := get_world_2d().direct_space_state.intersect_point(params)
+	var topmost: Node2D = null
+	for r in results:
+		var collider: Node = r["collider"]
+		if collider.get_parent() == $VehicleContainer and not collider.is_popped:
+			if topmost == null or collider.get_index() > topmost.get_index():
+				topmost = collider
+	if topmost:
+		topmost.pop()
+
 func _on_spawn_timer_timeout() -> void:
 	spawn_vehicle()
 
