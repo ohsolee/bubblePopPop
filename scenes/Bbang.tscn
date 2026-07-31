@@ -1,12 +1,15 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/bbang.gd" id="1_bbang"]
+[ext_resource type="Texture2D" uid="uid://chjw1oc7crixa" path="res://assets/sprites/img_BG_01.png" id="2_bg_tex"]
 
 [node name="Bbang" type="Node2D"]
 script = ExtResource("1_bbang")
 
 [node name="Background" type="Sprite2D" parent="."]
 position = Vector2(360, 640)
+scale = Vector2(0.680127, 0.680127)
+texture = ExtResource("2_bg_tex")
 
 [node name="VehicleContainer" type="Node2D" parent="."]
 
