@@ -23,6 +23,10 @@ var is_popped: bool = false   # 중복 터치 방지 가드
 var move_dir: Vector2 = Vector2.UP    # 진행 방향(단위 벡터). 스폰 시 Main이 지정
 var base_pos: Vector2 = Vector2.ZERO  # 살랑임의 기준이 되는 중심 위치
 
+var pop_progress: float = 0.0   # 팝 연출 진행도(0=시작 ~ 1=완전히 사라짐)
+var pop_radius: float = 0.0     # 스프라이트 크기에 맞춘 팝 연출 기준 반지름
+var pop_seed: float = 0.0       # 물방울 조각 배치를 방울마다 다르게
+
 func _ready() -> void:
 	speed = randf_range(45.0, 85.0)
 	sway_amp = randf_range(35.0, 60.0)
@@ -31,6 +35,9 @@ func _ready() -> void:
 	wobble_period = randf_range(250.0, 400.0)
 	time_offset = randf_range(0.0, 1000.0)
 	base_pos = position
+	pop_seed = randf_range(0.0, TAU)
+	# 실제 표시되는 스프라이트 크기 기준으로 팝 연출 반지름 산출
+	pop_radius = $BubbleSprite.texture.get_size().x * $BubbleSprite.scale.x * 0.5
 	# Area2D의 터치/클릭 이벤트를 아래 함수에 연결
 	input_event.connect(_on_input_event)
 
@@ -60,17 +67,19 @@ func pop() -> void:
 	$CollisionShape2D.set_deferred("disabled", true)
 	popped.emit(global_position, character_type)
 	set_process(false)    # 팝 후에는 이동/살랑임 계산 중단
-	if character_type != "":
-		# 루이/토토 방울: 살짝 확대됐다가 사라짐
-		var tw := create_tween()
-		tw.tween_property(self, "scale", scale * 1.35, 0.12)
-		tw.tween_callback(func():
-			$BubbleSprite.hide()
-			$CharacterSprite.hide()
-		)
+	# 비눗방울 스프라이트는 즉시 숨기고, 터지는 연출은 _draw()로 직접 그린다
+	$BubbleSprite.hide()
+	var pop_tw := create_tween()
+	pop_tw.tween_method(_set_pop_progress, 0.0, 1.0, 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	# 루이/토토 인형은 방울이 터진 후에도 잠깐 남아, 살짝 커지며 사라진다
+	var char_tw: Tween = null
+	if character_type == "rui":
+		char_tw = _play_character_pop($CharacterSprite)
+	elif character_type == "toto":
+		char_tw = _play_character_pop($TotoSprite)
 	else:
-		$BubbleSprite.hide()
 		$CharacterSprite.hide()
+		$TotoSprite.hide()
 	# 방울 종류에 맞는 사운드 선택: 일반=bbok, 루이=rui, 토토=toto
 	var sound := BBOK_SOUND
 	if character_type == "rui":
@@ -79,8 +88,11 @@ func pop() -> void:
 		sound = TOTO_SOUND
 	$PopSound.stream = sound
 	$PopSound.play()
-	# 사운드가 끝날 때까지 기다렸다가 정리(끊기지 않게)
-	$PopSound.finished.connect(queue_free)
+	# 사운드/인형 연출 중 더 오래 걸리는 쪽이 끝날 때까지 기다렸다가 정리(끊기지 않게)
+	if char_tw != null:
+		char_tw.finished.connect(queue_free)
+	else:
+		$PopSound.finished.connect(queue_free)
 
 func setup_motion(dir: Vector2) -> void:
 	# Main이 스폰할 때 진행 방향을 넘겨준다.
@@ -91,7 +103,41 @@ func setup_character(who: String) -> void:
 	if who == "rui":
 		# 씬(Bubble.tscn)에 지정된 루이(Rui) 이미지를 버블 위에 표시
 		$CharacterSprite.show()
-	else:
-		# 토토 아트는 아직 없어 임시로 버블을 노랗게 틴트해 구분
-		# (토토 스프라이트가 생기면 루이처럼 CharacterSprite로 연결)
-		$BubbleSprite.modulate = Color(1.0, 0.85, 0.2)
+	elif who == "toto":
+		# 씬(Bubble.tscn)에 지정된 토토(Toto) 이미지를 버블 위에 표시
+		$TotoSprite.show()
+
+func _play_character_pop(sprite: Sprite2D) -> Tween:
+	var start_scale := sprite.scale
+	var tw := create_tween()
+	# set_parallel(true)는 "바로 앞에 추가된 tweener"와 동시에 시작하게 만들 뿐이라,
+	# tween_interval() 뒤에 바로 붙이면 대기 시간과 "동시에" 실행돼 버려 홀드가 무시된다.
+	# 그래서 interval 대신 각 tween_property에 set_delay()로 0.8초 지연을 직접 지정한다.
+	tw.set_parallel(true)
+	var hold := 0.8
+	tw.tween_property(sprite, "scale", start_scale * 1.3, 0.3).set_delay(hold).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(sprite, "modulate:a", 0.0, 0.3).set_delay(hold + 0.05)
+	tw.chain().tween_callback(sprite.hide)
+	return tw
+
+func _set_pop_progress(v: float) -> void:
+	pop_progress = v
+	queue_redraw()
+
+func _draw() -> void:
+	# 스프라이트 없이 비눗방울이 "팡" 터지는 순간을 직접 그린다:
+	# 테두리 링이 확 커지며 옅어지고, 물방울 조각들이 사방으로 튀며 작아진다.
+	if not is_popped:
+		return
+	var t := pop_progress
+	var fade := 1.0 - t
+	var ring_radius := pop_radius * (0.85 + t * 0.9)
+	draw_arc(Vector2.ZERO, ring_radius, 0.0, TAU, 32, Color(1.0, 1.0, 1.0, fade * 0.8), 4.0, true)
+	var droplet_count := 8
+	for i in range(droplet_count):
+		var angle := pop_seed + i * TAU / droplet_count
+		var dist := pop_radius * (0.3 + t * 0.9)
+		var pos := Vector2(cos(angle), sin(angle)) * dist
+		var r := pop_radius * 0.14 * fade
+		if r > 0.5:
+			draw_circle(pos, r, Color(0.85, 0.95, 1.0, fade * 0.9))
