@@ -6,23 +6,23 @@
 [ext_resource type="Texture2D" uid="uid://cjb03h4mauqas" path="res://assets/sprites/spr_toto_idle.png" id="4_toto_tex"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
-radius = 48.5
+radius = 72.75
 
 [node name="Bubble" type="Area2D"]
 script = ExtResource("1_bubble")
 
 [node name="BubbleSprite" type="Sprite2D" parent="."]
-scale = Vector2(0.225, 0.225)
+scale = Vector2(0.3375, 0.3375)
 texture = ExtResource("2_bubble_tex")
 
 [node name="CharacterSprite" type="Sprite2D" parent="."]
 visible = false
-scale = Vector2(0.225, 0.225)
+scale = Vector2(0.3375, 0.3375)
 texture = ExtResource("3_rui_tex")
 
 [node name="TotoSprite" type="Sprite2D" parent="."]
 visible = false
-scale = Vector2(0.225, 0.225)
+scale = Vector2(0.3375, 0.3375)
 texture = ExtResource("4_toto_tex")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
