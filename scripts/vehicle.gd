@@ -1,7 +1,7 @@
 extends Area2D
 class_name Vehicle
 ## 빠방 화면에 등장하는 탈것 1개. 경찰차/구급차/불도저/트럭 및
-## 꼬마버스 타요 친구들(타요/로기/가니/라니/씨투)이 화면을 가로지르며,
+## 꼬마버스 친구들(bluebus/greenbus/redbus/yellowbus/씨투)이 화면을 가로지르며,
 ## 터치하면 사라진다.
 ##
 ## 실제 그림이 아직 없을 때는 종류별 색상을 입힌 임시 아이콘으로 표시된다.
@@ -15,10 +15,10 @@ enum VehicleType {
 	AMBULANCE,
 	BULLDOZER,
 	TRUCK,
-	TAYO,
-	ROGI,
-	GANI,
-	LANI,
+	BLUEBUS,
+	GREENBUS,
+	REDBUS,
+	YELLOWBUS,
 	CITU,
 }
 
@@ -28,10 +28,10 @@ const TEXTURE_PATHS := {
 	VehicleType.AMBULANCE: "res://assets/sprites/spr_ambulance.png",
 	VehicleType.BULLDOZER: "res://assets/sprites/spr_bulldozer.png",
 	VehicleType.TRUCK: "res://assets/sprites/spr_truck.png",
-	VehicleType.TAYO: "res://assets/sprites/spr_tayo.png",
-	VehicleType.ROGI: "res://assets/sprites/spr_rogi.png",
-	VehicleType.GANI: "res://assets/sprites/spr_gani.png",
-	VehicleType.LANI: "res://assets/sprites/spr_lani.png",
+	VehicleType.BLUEBUS: "res://assets/sprites/spr_bluebus.png",
+	VehicleType.GREENBUS: "res://assets/sprites/spr_greenbus.png",
+	VehicleType.REDBUS: "res://assets/sprites/spr_redbus.png",
+	VehicleType.YELLOWBUS: "res://assets/sprites/spr_yellowbus.png",
 	VehicleType.CITU: "res://assets/sprites/spr_citu.png",
 }
 
@@ -41,10 +41,10 @@ const PLACEHOLDER_COLORS := {
 	VehicleType.AMBULANCE: Color(0.95, 0.15, 0.15),
 	VehicleType.BULLDOZER: Color(0.85, 0.6, 0.1),
 	VehicleType.TRUCK: Color(0.45, 0.45, 0.45),
-	VehicleType.TAYO: Color(0.1, 0.65, 0.9),
-	VehicleType.ROGI: Color(0.2, 0.7, 0.3),
-	VehicleType.GANI: Color(0.85, 0.2, 0.2),
-	VehicleType.LANI: Color(0.95, 0.8, 0.1),
+	VehicleType.BLUEBUS: Color(0.1, 0.65, 0.9),
+	VehicleType.GREENBUS: Color(0.2, 0.7, 0.3),
+	VehicleType.REDBUS: Color(0.85, 0.2, 0.2),
+	VehicleType.YELLOWBUS: Color(0.95, 0.8, 0.1),
 	VehicleType.CITU: Color(0.7, 0.1, 0.1),
 }
 
@@ -57,14 +57,14 @@ const SOUND_PATHS := {
 	VehicleType.AMBULANCE: "res://assets/audio/snd_ambulance.wav",
 	VehicleType.BULLDOZER: "res://assets/audio/snd_bulldozer.wav",
 	VehicleType.TRUCK: "res://assets/audio/snd_truck.wav",
-	VehicleType.TAYO: "res://assets/audio/snd_tayo.wav",
-	VehicleType.ROGI: "res://assets/audio/snd_rogi.wav",
-	VehicleType.GANI: "res://assets/audio/snd_gani.wav",
-	VehicleType.LANI: "res://assets/audio/snd_lani.wav",
+	VehicleType.BLUEBUS: "res://assets/audio/snd_bluebus.wav",
+	VehicleType.GREENBUS: "res://assets/audio/snd_greenbus.wav",
+	VehicleType.REDBUS: "res://assets/audio/snd_redbus.wav",
+	VehicleType.YELLOWBUS: "res://assets/audio/snd_yellowbus.wav",
 	VehicleType.CITU: "res://assets/audio/snd_citu.wav",
 }
 
-var vehicle_type: VehicleType = VehicleType.TAYO
+var vehicle_type: VehicleType = VehicleType.BLUEBUS
 var speed: float = 0.0
 var move_dir: Vector2 = Vector2.RIGHT
 var is_popped: bool = false

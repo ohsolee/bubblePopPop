@@ -1,7 +1,20 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/bbang.gd" id="1_bbang"]
 [ext_resource type="Texture2D" uid="uid://chjw1oc7crixa" path="res://assets/sprites/img_BG_01.png" id="2_bg_tex"]
+[ext_resource type="Shader" path="res://shaders/grayscale.gdshader" id="3_grayscale_shader"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spr_police_car.png" id="4_police_car_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spr_ambulance.png" id="5_ambulance_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spr_bulldozer.png" id="6_bulldozer_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spr_truck.png" id="7_truck_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spr_bluebus.png" id="8_bluebus_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spr_greenbus.png" id="9_greenbus_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spr_redbus.png" id="10_redbus_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spr_yellowbus.png" id="11_yellowbus_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/spr_citu.png" id="12_citu_tex"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_grayscale"]
+shader = ExtResource("3_grayscale_shader")
 
 [node name="Bbang" type="Node2D"]
 script = ExtResource("1_bbang")
@@ -29,3 +42,86 @@ offset_bottom = 84.0
 grow_horizontal = 0
 theme_override_font_sizes/font_size = 32
 text = "← 메뉴"
+
+[node name="CollectionRow" type="HBoxContainer" parent="UILayer"]
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -110.0
+offset_bottom = -24.0
+grow_vertical = 0
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="PoliceCarIcon" type="TextureRect" parent="UILayer/CollectionRow"]
+custom_minimum_size = Vector2(49.6, 36.2)
+layout_mode = 2
+material = SubResource("ShaderMaterial_grayscale")
+texture = ExtResource("4_police_car_tex")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="AmbulanceIcon" type="TextureRect" parent="UILayer/CollectionRow"]
+custom_minimum_size = Vector2(50.3, 37.1)
+layout_mode = 2
+material = SubResource("ShaderMaterial_grayscale")
+texture = ExtResource("5_ambulance_tex")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BulldozerIcon" type="TextureRect" parent="UILayer/CollectionRow"]
+custom_minimum_size = Vector2(50.8, 38.1)
+layout_mode = 2
+material = SubResource("ShaderMaterial_grayscale")
+texture = ExtResource("6_bulldozer_tex")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TruckIcon" type="TextureRect" parent="UILayer/CollectionRow"]
+custom_minimum_size = Vector2(50.2, 38.4)
+layout_mode = 2
+material = SubResource("ShaderMaterial_grayscale")
+texture = ExtResource("7_truck_tex")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BluebusIcon" type="TextureRect" parent="UILayer/CollectionRow"]
+custom_minimum_size = Vector2(51.2, 38.5)
+layout_mode = 2
+material = SubResource("ShaderMaterial_grayscale")
+texture = ExtResource("8_bluebus_tex")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GreenbusIcon" type="TextureRect" parent="UILayer/CollectionRow"]
+custom_minimum_size = Vector2(49.2, 37.7)
+layout_mode = 2
+material = SubResource("ShaderMaterial_grayscale")
+texture = ExtResource("9_greenbus_tex")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="RedbusIcon" type="TextureRect" parent="UILayer/CollectionRow"]
+custom_minimum_size = Vector2(49.3, 37.1)
+layout_mode = 2
+material = SubResource("ShaderMaterial_grayscale")
+texture = ExtResource("10_redbus_tex")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="YellowbusIcon" type="TextureRect" parent="UILayer/CollectionRow"]
+custom_minimum_size = Vector2(51.2, 37.4)
+layout_mode = 2
+material = SubResource("ShaderMaterial_grayscale")
+texture = ExtResource("11_yellowbus_tex")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CituIcon" type="TextureRect" parent="UILayer/CollectionRow"]
+custom_minimum_size = Vector2(51.1, 40.9)
+layout_mode = 2
+material = SubResource("ShaderMaterial_grayscale")
+texture = ExtResource("12_citu_tex")
+expand_mode = 1
+stretch_mode = 5

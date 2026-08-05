@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dpig286r8anob"
-path="res://.godot/imported/spr_gani.png-bb6de691f75515968cd4add39dde5a2d.ctex"
+uid="uid://b03dohpal0xou"
+path="res://.godot/imported/spr_bluebus.png-c338f9d1434e9d5d38e2b5f651c21512.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/spr_gani.png"
-dest_files=["res://.godot/imported/spr_gani.png-bb6de691f75515968cd4add39dde5a2d.ctex"]
+source_file="res://assets/sprites/spr_bluebus.png"
+dest_files=["res://.godot/imported/spr_bluebus.png-c338f9d1434e9d5d38e2b5f651c21512.ctex"]
 
 [params]
 

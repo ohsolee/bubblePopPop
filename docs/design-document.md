@@ -3,9 +3,11 @@
 > "루이, 어디있어?" 본편 전 워밍업 프로젝트
 > 목표: 게임 완성 그 자체보다 **Godot 워크플로우 + 2인 협업 방식 검증**
 >
-> **문서 버전: v0.05**
+> **문서 버전: v0.06**
 
 ### 변경 이력
+- **v0.06** — `VehicleType`의 `TAYO`/`ROGI`/`GANI`/`LANI`를 `BLUEBUS`/`GREENBUS`/`REDBUS`/`YELLOWBUS`로 개명
+  (파일명도 `spr_tayo.png`→`spr_bluebus.png` 등으로 동일하게 변경, 접두/접미(`spr_`, `snd_`, `Icon` 등)는 그대로 유지).
 - **v0.05** — 빠방을 **비눗방울 모양에서 실제 탈것 이미지**로 전면 교체.
   **Vehicle.tscn/vehicle.gd** 신설(`class_name Vehicle`), 9종을 영문 enum `VehicleType`으로 관리:
   `POLICE_CAR`(경찰차) · `AMBULANCE`(구급차) · `BULLDOZER`(불도저) · `TRUCK`(트럭) ·
@@ -415,10 +417,10 @@ pop() 안에서:
 | AMBULANCE | 구급차 | `spr_ambulance.png` | 〃 |
 | BULLDOZER | 불도저 | `spr_bulldozer.png` | 〃 |
 | TRUCK | 트럭 | `spr_truck.png` | 〃 |
-| TAYO | 타요 | `spr_tayo.png` | 꼬마버스 타요 영문 공식 표기 |
-| ROGI | 로기 | `spr_rogi.png` | 〃 |
-| GANI | 가니 | `spr_gani.png` | 〃 |
-| LANI | 라니 | `spr_lani.png` | 〃 |
+| BLUEBUS | 타요 | `spr_bluebus.png` | 꼬마버스 타요 캐릭터 |
+| GREENBUS | 로기 | `spr_greenbus.png` | 〃 |
+| REDBUS | 가니 | `spr_redbus.png` | 〃 |
+| YELLOWBUS | 라니 | `spr_yellowbus.png` | 〃 |
 | CITU | 씨투 | `spr_citu.png` | 〃 (Cito로 표기되기도 함) |
 
 > 현재(그림 없는 상태)는 종류별 색으로만 구분되는 임시 표시. 파일을 넣으면 즉시 실제 그림으로 바뀐다.

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dhhixr05bjv5a"
-path="res://.godot/imported/spr_lani.png-3540e3f5f6c8865a56d1f940f0bda36a.ctex"
+uid="uid://dfqjjvplalgx0"
+path="res://.godot/imported/spr_greenbus.png-0f2f720056714cf810af41682d46f0f7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/spr_lani.png"
-dest_files=["res://.godot/imported/spr_lani.png-3540e3f5f6c8865a56d1f940f0bda36a.ctex"]
+source_file="res://assets/sprites/spr_greenbus.png"
+dest_files=["res://.godot/imported/spr_greenbus.png-0f2f720056714cf810af41682d46f0f7.ctex"]
 
 [params]
 

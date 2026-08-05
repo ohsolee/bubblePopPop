@@ -1,6 +1,6 @@
 extends Node2D
-## 빠방 화면. 경찰차/구급차/불도저/트럭과 꼬마버스 타요 친구들
-## (타요/로기/가니/라니/씨투)이 화면 사방에서 나타나 가로질러 지나간다.
+## 빠방 화면. 경찰차/구급차/불도저/트럭과 꼬마버스 친구들
+## (bluebus/greenbus/redbus/yellowbus/씨투)이 화면 사방에서 나타나 가로질러 지나간다.
 ## 노드 구조: VehicleContainer / SpawnTimer / UILayer/MenuButton (Vehicle.tscn 인스턴싱).
 
 var vehicle_scene: PackedScene = preload("res://scenes/Vehicle.tscn")
@@ -10,16 +10,36 @@ const VEHICLE_TYPES: Array = [
 	Vehicle.VehicleType.AMBULANCE,
 	Vehicle.VehicleType.BULLDOZER,
 	Vehicle.VehicleType.TRUCK,
-	Vehicle.VehicleType.TAYO,
-	Vehicle.VehicleType.ROGI,
-	Vehicle.VehicleType.GANI,
-	Vehicle.VehicleType.LANI,
+	Vehicle.VehicleType.BLUEBUS,
+	Vehicle.VehicleType.GREENBUS,
+	Vehicle.VehicleType.REDBUS,
+	Vehicle.VehicleType.YELLOWBUS,
 	Vehicle.VehicleType.CITU,
 ]
 
+## 종류별 하단 도감 아이콘(회색 → 해당 탈것을 터뜨리면 컬러로 표시)
+var collection_icons: Dictionary = {}
+
 func _ready() -> void:
+	collection_icons = {
+		Vehicle.VehicleType.POLICE_CAR: $UILayer/CollectionRow/PoliceCarIcon,
+		Vehicle.VehicleType.AMBULANCE: $UILayer/CollectionRow/AmbulanceIcon,
+		Vehicle.VehicleType.BULLDOZER: $UILayer/CollectionRow/BulldozerIcon,
+		Vehicle.VehicleType.TRUCK: $UILayer/CollectionRow/TruckIcon,
+		Vehicle.VehicleType.BLUEBUS: $UILayer/CollectionRow/BluebusIcon,
+		Vehicle.VehicleType.GREENBUS: $UILayer/CollectionRow/GreenbusIcon,
+		Vehicle.VehicleType.REDBUS: $UILayer/CollectionRow/RedbusIcon,
+		Vehicle.VehicleType.YELLOWBUS: $UILayer/CollectionRow/YellowbusIcon,
+		Vehicle.VehicleType.CITU: $UILayer/CollectionRow/CituIcon,
+	}
 	$SpawnTimer.timeout.connect(_on_spawn_timer_timeout)
 	$UILayer/MenuButton.pressed.connect(_on_menu_button_pressed)
+
+func _on_vehicle_popped(_pos: Vector2, vehicle_type: Vehicle.VehicleType) -> void:
+	# 해당 종류를 처음 터뜨린 순간 회색 셰이더를 떼어내 컬러로 보여준다
+	var icon: TextureRect = collection_icons.get(vehicle_type)
+	if icon != null:
+		icon.material = null
 
 func _on_menu_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
@@ -72,4 +92,5 @@ func spawn_vehicle() -> void:
 	v.position = spawn_pos
 	var type: Vehicle.VehicleType = VEHICLE_TYPES[randi_range(0, VEHICLE_TYPES.size() - 1)]
 	v.setup(type, dir)
+	v.popped.connect(_on_vehicle_popped)
 	$VehicleContainer.add_child(v)

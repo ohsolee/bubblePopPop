@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://chgc6tvog5xqw"
-path="res://.godot/imported/spr_rogi.png-071894cfec41439b1e32973c6599872f.ctex"
+uid="uid://5d8i1ifha37a"
+path="res://.godot/imported/spr_yellowbus.png-6f80ff8a5a09c341bfce5d0a2e939ee6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/spr_rogi.png"
-dest_files=["res://.godot/imported/spr_rogi.png-071894cfec41439b1e32973c6599872f.ctex"]
+source_file="res://assets/sprites/spr_yellowbus.png"
+dest_files=["res://.godot/imported/spr_yellowbus.png-6f80ff8a5a09c341bfce5d0a2e939ee6.ctex"]
 
 [params]
 

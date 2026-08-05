@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ck2gsy6pxgq0k"
-path="res://.godot/imported/spr_tayo.png-6cf2532eabfbda20cef4f7d4cd3da1dc.ctex"
+uid="uid://dfdgw3ma1hj81"
+path="res://.godot/imported/spr_redbus.png-6a267b8fa55c8f98374b9b8a68b0e8d0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/spr_tayo.png"
-dest_files=["res://.godot/imported/spr_tayo.png-6cf2532eabfbda20cef4f7d4cd3da1dc.ctex"]
+source_file="res://assets/sprites/spr_redbus.png"
+dest_files=["res://.godot/imported/spr_redbus.png-6a267b8fa55c8f98374b9b8a68b0e8d0.ctex"]
 
 [params]
 
