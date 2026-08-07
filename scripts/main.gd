@@ -27,7 +27,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	# 여기서 한 번에 모아서 맨 위(가장 나중에 그려진 = BubbleContainer 안에서
 	# 형제 인덱스가 가장 큰) 방울 하나만 터뜨린다.
 	if event is InputEventScreenTouch and event.pressed:
-		_pop_topmost_bubble_at(get_global_mouse_position())
+		# 멀티터치: 각 손가락 이벤트의 좌표를 직접 월드 좌표로 변환해 사용한다.
+		# get_global_mouse_position()은 포인터 1개만 반영해 두 번째 손가락부터 무시된다.
+		var world_pos: Vector2 = get_global_transform_with_canvas().affine_inverse() * event.position
+		_pop_topmost_bubble_at(world_pos)
 
 func _pop_topmost_bubble_at(world_pos: Vector2) -> void:
 	var params := PhysicsPointQueryParameters2D.new()
