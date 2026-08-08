@@ -67,10 +67,9 @@ texture_normal = ExtResource("5_bus_tex")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="Button3" type="TextureButton" parent="CenterContainer/VBoxContainer"]
+[node name="NumButton" type="TextureButton" parent="CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(320, 113)
 layout_mode = 2
-disabled = true
 texture_normal = ExtResource("6_btn_tex")
 ignore_texture_size = true
 stretch_mode = 5
