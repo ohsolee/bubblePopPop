@@ -1,8 +1,9 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/bbang.gd" id="1_bbang"]
 [ext_resource type="Texture2D" uid="uid://chjw1oc7crixa" path="res://assets/sprites/img_BG_01.png" id="2_bg_tex"]
 [ext_resource type="Shader" path="res://shaders/grayscale.gdshader" id="3_grayscale_shader"]
+[ext_resource type="Texture2D" path="res://assets/sprites/btn_menu.png" id="13_menu_tex"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spr_police_car.png" id="4_police_car_tex"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spr_ambulance.png" id="5_ambulance_tex"]
 [ext_resource type="Texture2D" path="res://assets/sprites/spr_bulldozer.png" id="6_bulldozer_tex"]
@@ -32,7 +33,7 @@ autostart = true
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 
-[node name="MenuButton" type="Button" parent="UILayer"]
+[node name="MenuButton" type="TextureButton" parent="UILayer"]
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -200.0
@@ -40,8 +41,9 @@ offset_top = 24.0
 offset_right = -24.0
 offset_bottom = 84.0
 grow_horizontal = 0
-theme_override_font_sizes/font_size = 32
-text = "← 메뉴"
+texture_normal = ExtResource("13_menu_tex")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="CollectionRow" type="HBoxContainer" parent="UILayer"]
 anchor_left = 0.0
