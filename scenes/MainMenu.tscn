@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/btn_bubble.png" id="4_bubble_tex"]
 [ext_resource type="Texture2D" path="res://assets/sprites/btn_bus.png" id="5_bus_tex"]
 [ext_resource type="Texture2D" path="res://assets/sprites/btn_num.png" id="6_num_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/btn_frd.png" id="7_frd_tex"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -71,5 +72,12 @@ stretch_mode = 5
 custom_minimum_size = Vector2(320, 113)
 layout_mode = 2
 texture_normal = ExtResource("6_num_tex")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="FriendsButton" type="TextureButton" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(320, 113)
+layout_mode = 2
+texture_normal = ExtResource("7_frd_tex")
 ignore_texture_size = true
 stretch_mode = 5
