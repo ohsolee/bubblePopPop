@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/face_item_1.png" id="2_face_tex"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
-radius = 120.0
+radius = 136.0
 
 [node name="FaceItem" type="Area2D"]
 script = ExtResource("1_face_item")

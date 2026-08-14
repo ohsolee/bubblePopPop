@@ -19,6 +19,20 @@ const TEXTURE_PATHS := {
 	9: "res://assets/sprites/spr_9.png",
 }
 
+## 숫자별 음성 경로(이름이 같은 snd_spr_N.wav와 매칭, 없으면 POP_SOUND로 대체)
+const SOUND_PATHS := {
+	0: "res://assets/audio/snd_spr_0.wav",
+	1: "res://assets/audio/snd_spr_1.wav",
+	2: "res://assets/audio/snd_spr_2.wav",
+	3: "res://assets/audio/snd_spr_3.wav",
+	4: "res://assets/audio/snd_spr_4.wav",
+	5: "res://assets/audio/snd_spr_5.wav",
+	6: "res://assets/audio/snd_spr_6.wav",
+	7: "res://assets/audio/snd_spr_7.wav",
+	8: "res://assets/audio/snd_spr_8.wav",
+	9: "res://assets/audio/snd_spr_9.wav",
+}
+
 const POP_SOUND: AudioStream = preload("res://assets/audio/bbok.wav")
 
 var digit: int = 0
@@ -26,21 +40,30 @@ var speed: float = 0.0
 var move_dir: Vector2 = Vector2.RIGHT
 var is_popped: bool = false
 
+## 화면(720x1280) 안에서만 떠다니도록 튕기는 경계(원 반지름 75만큼 여유를 둔다)
+const MARGIN := 75.0
+const SCREEN_WIDTH := 720.0
+const SCREEN_HEIGHT := 1280.0
+
 func _ready() -> void:
 	speed = randf_range(60.0, 100.0)
 	$NumberSprite.texture = load(TEXTURE_PATHS[digit])
 
 func _process(delta: float) -> void:
 	position += move_dir * speed * delta
-	# 화면(720x1280) 밖으로 나가면 반대편으로 순환시킨다(눌러야만 사라지므로 임의 정리 금지)
-	if position.x < -200.0:
-		position.x = 920.0
-	elif position.x > 920.0:
-		position.x = -200.0
-	if position.y < -200.0:
-		position.y = 1480.0
-	elif position.y > 1480.0:
-		position.y = -200.0
+	# 화면 밖으로 나가지 않도록 가장자리에서 튕겨 나오게 한다.
+	if position.x < MARGIN:
+		position.x = MARGIN
+		move_dir.x = abs(move_dir.x)
+	elif position.x > SCREEN_WIDTH - MARGIN:
+		position.x = SCREEN_WIDTH - MARGIN
+		move_dir.x = -abs(move_dir.x)
+	if position.y < MARGIN:
+		position.y = MARGIN
+		move_dir.y = abs(move_dir.y)
+	elif position.y > SCREEN_HEIGHT - MARGIN:
+		position.y = SCREEN_HEIGHT - MARGIN
+		move_dir.y = -abs(move_dir.y)
 
 func pop() -> void:
 	if is_popped:
@@ -50,7 +73,8 @@ func pop() -> void:
 	popped.emit(global_position, digit)
 	set_process(false)
 	$NumberSprite.hide()
-	$PopSound.stream = POP_SOUND
+	var sound_path: String = SOUND_PATHS.get(digit, "")
+	$PopSound.stream = load(sound_path) if sound_path != "" and ResourceLoader.exists(sound_path) else POP_SOUND
 	$PopSound.play()
 	$PopSound.finished.connect(queue_free)
 

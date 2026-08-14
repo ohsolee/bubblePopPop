@@ -16,4 +16,26 @@
 가니 - REDBUS (파일: spr_redbus.png)
 라니 - YELLOWBUS (파일: spr_yellowbus.png)
 씨투 - CITU (파일: spr_citu.png)
-탈것 이미지(노드명) - VehicleSprite (파일 없으면 종류별 색으로 임시 표시)
+탈것 이미지(노드명) - VehicleSprite (파일 없으면 종류별 색으로 임시 표6시)
+
+# 친구들 화면 변수명 (Friends.tscn, face_item.gd, FACE_PAIRS)
+얼굴 이미지(노드명) - FaceSprite (터지기 전/후 그림이 짝을 이룸)
+짝1 터지기 전 - face_item_1.png / 터진 후 - face_item_2.png
+짝2 터지기 전 - face_item_3.png / 터진 후 - face_item_4.png
+친구들 메뉴 버튼 - FriendsButton (파일: btn_frd.png)
+
+# 하나둘셋(숫자) 화면 변수명 (Num.tscn, number.gd, NumberPiece)
+숫자 화면 씬 - Num.tscn / number.gd
+숫자 조각(노드명) - NumberPiece (Number.tscn)
+숫자 이미지(노드명) - NumberSprite
+0 - spr_0.png
+1 - spr_1.png
+2 - spr_2.png
+3 - spr_3.png
+4 - spr_4.png
+5 - spr_5.png
+6 - spr_6.png
+7 - spr_7.png
+8 - spr_8.png
+9 - spr_9.png
+하나둘셋 메뉴 버튼 - NumButton (파일: btn_num.png)

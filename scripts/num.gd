@@ -47,24 +47,9 @@ func _start_round() -> void:
 
 func _spawn_number(digit: int) -> void:
 	var n := number_scene.instantiate()
-	# 사방(0=아래,1=위,2=왼쪽,3=오른쪽) 중 랜덤한 변에서 스폰 → 반대편으로 가로지름
-	var edge := randi_range(0, 3)
-	var spawn_pos: Vector2
-	var dir: Vector2
-	match edge:
-		0:
-			spawn_pos = Vector2(randf_range(80.0, 640.0), 1360.0)
-			dir = Vector2.UP
-		1:
-			spawn_pos = Vector2(randf_range(80.0, 640.0), -80.0)
-			dir = Vector2.DOWN
-		2:
-			spawn_pos = Vector2(-80.0, randf_range(120.0, 1160.0))
-			dir = Vector2.RIGHT
-		_:
-			spawn_pos = Vector2(800.0, randf_range(120.0, 1160.0))
-			dir = Vector2.LEFT
-	dir = dir.rotated(randf_range(-0.3, 0.3))
+	# 화면(720x1280) 안에서만 떠다니도록 화면 내부에서 스폰하고 랜덤한 방향으로 움직인다.
+	var spawn_pos := Vector2(randf_range(80.0, 640.0), randf_range(120.0, 1160.0))
+	var dir := Vector2.RIGHT.rotated(randf_range(0.0, TAU))
 	n.position = spawn_pos
 	n.setup(digit, dir)
 	n.popped.connect(_on_number_popped)
