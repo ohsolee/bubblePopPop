@@ -9,6 +9,7 @@ signal popped(pos: Vector2)
 const FACE_PAIRS: Array = [
 	["res://assets/sprites/face_item_1.png", "res://assets/sprites/face_item_2.png"],
 	["res://assets/sprites/face_item_3.png", "res://assets/sprites/face_item_4.png"],
+	["res://assets/sprites/face_item_5.png", "res://assets/sprites/face_item_6.png"],
 ]
 const POP_SOUND: AudioStream = preload("res://assets/audio/bbok.wav")
 
