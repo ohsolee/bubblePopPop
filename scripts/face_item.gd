@@ -13,6 +13,9 @@ const FACE_PAIRS: Array = [
 ]
 const POP_SOUND: AudioStream = preload("res://assets/audio/bbok.wav")
 
+## 짝(before 그림 경로)별로 PAIR_SOUNDS 중 다음에 재생할 사운드 인덱스(무작위 대신 번갈아 재생)
+static var _sound_toggle: Dictionary = {}
+
 ## 짝(before 그림 경로)별로 터뜨릴 때 랜덤 재생할 사운드 목록.
 ## 여기 없는 짝(예: 5/6번)은 기본 POP_SOUND를 사용한다.
 const PAIR_SOUNDS := {
@@ -47,6 +50,9 @@ var move_dir: Vector2 = Vector2.UP
 var base_pos: Vector2 = Vector2.ZERO
 var after_tex: Texture2D       # 터졌을 때 바뀔 그림(스폰 시 짝에 맞춰 결정)
 var before_path: String = ""   # 스폰 시 고른 짝의 "터지기 전" 그림 경로(사운드 선택에 사용)
+## 스포너(friends.gd)가 세 종류를 균등하게 배분하려고 지정하는 짝 인덱스.
+## -1이면(직접 테스트 등으로 지정 안 된 경우) 무작위로 고른다.
+var pair_index: int = -1
 
 func _ready() -> void:
 	speed = randf_range(45.0, 85.0)
@@ -56,7 +62,8 @@ func _ready() -> void:
 	wobble_period = randf_range(250.0, 400.0)
 	time_offset = randf_range(0.0, 1000.0)
 	base_pos = position
-	var pair: Array = FACE_PAIRS[randi_range(0, FACE_PAIRS.size() - 1)]
+	var idx: int = pair_index if pair_index >= 0 else randi_range(0, FACE_PAIRS.size() - 1)
+	var pair: Array = FACE_PAIRS[idx]
 	before_path = pair[0]
 	var before_tex: Texture2D = load(pair[0])
 	after_tex = load(pair[1])
@@ -84,15 +91,19 @@ func pop() -> void:
 	# 짝을 이루는 "터진 뒤" 그림으로 바꿔 보여준 뒤 사라진다(크기도 다시 맞춘다)
 	$FaceSprite.texture = after_tex
 	$FaceSprite.scale = _scale_for(after_tex)
-	# 짝별로 지정된 사운드가 있으면 그중 하나를 랜덤 재생, 없으면 기본 POP_SOUND
+	# 짝별로 지정된 사운드가 있으면 번갈아가며 재생, 없으면 기본 POP_SOUND
 	var sounds: Array = PAIR_SOUNDS.get(before_path, [])
 	var sound: AudioStream = POP_SOUND
 	if not sounds.is_empty():
-		sound = load(sounds[randi_range(0, sounds.size() - 1)])
+		var idx: int = _sound_toggle.get(before_path, 0)
+		sound = load(sounds[idx])
+		_sound_toggle[before_path] = (idx + 1) % sounds.size()
 	$PopSound.stream = sound
 	$PopSound.play()
+	# 사운드가 0.5초보다 길면 잘리지 않도록 재생 시간만큼 기다렸다가 없앤다.
+	var wait_time: float = max(0.5, sound.get_length())
 	var tw := create_tween()
-	tw.tween_interval(0.5)
+	tw.tween_interval(wait_time)
 	tw.tween_callback(queue_free)
 
 func setup_motion(dir: Vector2) -> void:
