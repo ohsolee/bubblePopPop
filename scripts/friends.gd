@@ -5,6 +5,16 @@ extends Node2D
 
 var face_item_scene: PackedScene = preload("res://scenes/FaceItem.tscn")
 
+## 3가지 짝(0,1,2)이 똑같은 빈도로 나오도록 섞은 뒤 하나씩 뽑아 쓰는 주머니.
+## 다 뽑으면 다시 채우고 섞어서, 3번 스폰마다 세 종류가 정확히 한 번씩 나온다.
+var _pair_bag: Array = []
+
+func _next_pair_index() -> int:
+	if _pair_bag.is_empty():
+		_pair_bag = [0, 1, 2]
+		_pair_bag.shuffle()
+	return _pair_bag.pop_back()
+
 func _ready() -> void:
 	$SpawnTimer.timeout.connect(_on_spawn_timer_timeout)
 	$UILayer/MenuButton.pressed.connect(_on_menu_button_pressed)
@@ -38,6 +48,7 @@ func spawn_face_item() -> void:
 	dir = (dir + Vector2.UP * 0.35).normalized()
 	f.position = spawn_pos
 	f.setup_motion(dir)
+	f.pair_index = _next_pair_index()
 	$FaceItemContainer.add_child(f)
 
 func _unhandled_input(event: InputEvent) -> void:

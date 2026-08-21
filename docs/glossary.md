@@ -23,6 +23,16 @@
 짝1 터지기 전 - face_item_1.png / 터진 후 - face_item_2.png
 짝2 터지기 전 - face_item_3.png / 터진 후 - face_item_4.png
 친구들 메뉴 버튼 - FriendsButton (파일: btn_frd.png)
+친구들 진입 소리 - FRIENDS_SOUND (파일: bbok.wav, main_menu.gd)
+
+# 친구들 진입 비밀번호 팝업 (MainMenu.tscn/PinLayer, main_menu.gd)
+비밀번호 상수 - FRIENDS_PIN ("2024", main_menu.gd)
+팝업 루트(노드명) - PinLayer/PinPopup
+바깥 어둡게 처리(노드명) - Dimmer (터치 시 팝업 닫힘)
+입력 자리 표시(노드명) - DotsLabel (● ○로 입력 개수 표시)
+숫자 버튼(노드명) - GridContainer/Digit0~Digit9
+지우기 버튼(노드명) - ClearButton
+취소 버튼(노드명) - CancelButton
 
 # 하나둘셋(숫자) 화면 변수명 (Num.tscn, number.gd, NumberPiece)
 숫자 화면 씬 - Num.tscn / number.gd
