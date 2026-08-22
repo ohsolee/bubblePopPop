@@ -5,27 +5,21 @@ extends Node2D
 
 var face_item_scene: PackedScene = preload("res://scenes/FaceItem.tscn")
 
-## 3가지 짝(0,1,2)이 똑같은 빈도로 나오도록 섞은 뒤 하나씩 뽑아 쓰는 주머니.
-## 다 뽑으면 다시 채우고 섞어서, 3번 스폰마다 세 종류가 정확히 한 번씩 나온다.
-var _pair_bag: Array = []
-
-func _next_pair_index() -> int:
-	if _pair_bag.is_empty():
-		_pair_bag = [0, 1, 2]
-		_pair_bag.shuffle()
-	return _pair_bag.pop_back()
+## 종류(0=1/2번, 1=3/4번, 2=5/6번)마다 화면에 항상 이만큼씩 떠 있게 유지한다(총 6개).
+const COUNT_PER_PAIR := 2
 
 func _ready() -> void:
-	$SpawnTimer.timeout.connect(_on_spawn_timer_timeout)
 	$UILayer/MenuButton.pressed.connect(_on_menu_button_pressed)
+	# 계속 쌓이지 않도록: 타이머로 무한히 추가 생성하는 대신 종류별로 개수를 고정해두고,
+	# 하나가 터지면 같은 종류를 하나만 다시 채워 넣는다.
+	for pair_idx in range(3):
+		for i in range(COUNT_PER_PAIR):
+			spawn_face_item(pair_idx)
 
 func _on_menu_button_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
 
-func _on_spawn_timer_timeout() -> void:
-	spawn_face_item()
-
-func spawn_face_item() -> void:
+func spawn_face_item(pair_idx: int) -> void:
 	var f := face_item_scene.instantiate()
 	# 사방(0=아래,1=위,2=왼쪽,3=오른쪽) 중 랜덤한 변 바깥에서 스폰 → 반대편으로 가로지른다
 	var edge := randi_range(0, 3)
@@ -48,14 +42,23 @@ func spawn_face_item() -> void:
 	dir = (dir + Vector2.UP * 0.35).normalized()
 	f.position = spawn_pos
 	f.setup_motion(dir)
-	f.pair_index = _next_pair_index()
+	f.pair_index = pair_idx
+	f.popped.connect(_on_face_item_popped)
+	f.left_screen.connect(spawn_face_item)
 	$FaceItemContainer.add_child(f)
+
+func _on_face_item_popped(_pos: Vector2, pair_idx: int) -> void:
+	# 터진 종류와 같은 종류를 하나 다시 채워 항상 종류별 2개(총 6개)를 유지한다.
+	spawn_face_item(pair_idx)
 
 func _unhandled_input(event: InputEvent) -> void:
 	# 얼굴 아이템들이 겹쳐 있을 때 터치 지점의 아이템이 전부 동시에 사라지지 않도록,
 	# 맨 위(가장 나중에 그려진) 아이템 하나만 터뜨린다.
 	if event is InputEventScreenTouch and event.pressed:
-		_pop_topmost_face_item_at(get_global_mouse_position())
+		# 멀티터치: 각 손가락 이벤트의 좌표를 직접 월드 좌표로 변환해 사용한다.
+		# get_global_mouse_position()은 포인터 1개만 반영해 두 번째 손가락부터 무시된다.
+		var world_pos: Vector2 = get_global_transform_with_canvas().affine_inverse() * event.position
+		_pop_topmost_face_item_at(world_pos)
 
 func _pop_topmost_face_item_at(world_pos: Vector2) -> void:
 	var params := PhysicsPointQueryParameters2D.new()

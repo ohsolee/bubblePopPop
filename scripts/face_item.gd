@@ -3,7 +3,9 @@ extends Area2D
 ## 두둥실 가로지르며, 터치하면 짝을 이루는 다음 그림으로 바뀐 뒤 사라진다.
 ## 짝(before → after)은 FACE_PAIRS에 하나씩 추가하면 스폰 시 랜덤으로 고른다.
 
-signal popped(pos: Vector2)
+signal popped(pos: Vector2, pair_idx: int)
+## 터뜨리지 않고 화면 밖으로 나가서 사라질 때(같은 종류를 다시 채워 넣는 데 사용)
+signal left_screen(pair_idx: int)
 
 ## 얼굴 짝 목록: [터지기 전 그림, 터진 뒤 그림]
 const FACE_PAIRS: Array = [
@@ -16,8 +18,8 @@ const POP_SOUND: AudioStream = preload("res://assets/audio/bbok.wav")
 ## 짝(before 그림 경로)별로 PAIR_SOUNDS 중 다음에 재생할 사운드 인덱스(무작위 대신 번갈아 재생)
 static var _sound_toggle: Dictionary = {}
 
-## 짝(before 그림 경로)별로 터뜨릴 때 랜덤 재생할 사운드 목록.
-## 여기 없는 짝(예: 5/6번)은 기본 POP_SOUND를 사용한다.
+## 짝(before 그림 경로)별로 터뜨릴 때 번갈아 재생할 사운드 목록.
+## 여기 없는 짝은 기본 POP_SOUND를 사용한다.
 const PAIR_SOUNDS := {
 	"res://assets/sprites/face_item_1.png": [
 		"res://assets/audio/Ohji.wav",
@@ -27,11 +29,15 @@ const PAIR_SOUNDS := {
 		"res://assets/audio/Koyuna.wav",
 		"res://assets/audio/Yuna.wav",
 	],
+	"res://assets/sprites/face_item_5.png": [
+		"res://assets/audio/Jeonghwi.wav",
+		"res://assets/audio/Leejeonghwi.wav",
+	],
 }
 
 ## 1,2번 그림 기준 화면 표시 크기. 다른 짝의 그림은 원본 해상도/가로세로 비율이
 ## 달라도 가로·세로 중 더 긴 쪽을 이 값에 맞춰서 항상 같은 크기로 보이게 한다.
-const REFERENCE_SCALE := 0.228
+const REFERENCE_SCALE := 0.19
 const TARGET_MAX_DIM: float = 1195.0 * REFERENCE_SCALE
 
 ## 특정 그림만 기본 크기에서 배율을 더 주고 싶을 때 사용(그림 경로 → 배율)
@@ -50,9 +56,10 @@ var move_dir: Vector2 = Vector2.UP
 var base_pos: Vector2 = Vector2.ZERO
 var after_tex: Texture2D       # 터졌을 때 바뀔 그림(스폰 시 짝에 맞춰 결정)
 var before_path: String = ""   # 스폰 시 고른 짝의 "터지기 전" 그림 경로(사운드 선택에 사용)
-## 스포너(friends.gd)가 세 종류를 균등하게 배분하려고 지정하는 짝 인덱스.
+## 스포너(friends.gd)가 종류를 지정하는 짝 인덱스.
 ## -1이면(직접 테스트 등으로 지정 안 된 경우) 무작위로 고른다.
 var pair_index: int = -1
+var _resolved_pair_index: int = 0  # _ready에서 실제로 고른 인덱스(터졌을 때 같은 종류를 다시 스폰하는 데 사용)
 
 func _ready() -> void:
 	speed = randf_range(45.0, 85.0)
@@ -63,6 +70,7 @@ func _ready() -> void:
 	time_offset = randf_range(0.0, 1000.0)
 	base_pos = position
 	var idx: int = pair_index if pair_index >= 0 else randi_range(0, FACE_PAIRS.size() - 1)
+	_resolved_pair_index = idx
 	var pair: Array = FACE_PAIRS[idx]
 	before_path = pair[0]
 	var before_tex: Texture2D = load(pair[0])
@@ -77,8 +85,10 @@ func _process(delta: float) -> void:
 	var sway := sin(t / sway_period) * sway_amp
 	var wobble := sin(t / wobble_period) * wobble_amp
 	position = base_pos + perp * (sway + wobble)
-	# 화면(720x1280) 밖으로 충분히 나가면 메모리 정리(사방 어디로든)
+	# 화면(720x1280) 밖으로 충분히 나가면 메모리 정리(사방 어디로든),
+	# 같은 종류를 다시 하나 채워 넣도록 알린다.
 	if position.x < -200.0 or position.x > 920.0 or position.y < -200.0 or position.y > 1480.0:
+		left_screen.emit(_resolved_pair_index)
 		queue_free()
 
 func pop() -> void:
@@ -86,7 +96,6 @@ func pop() -> void:
 		return
 	is_popped = true
 	$CollisionShape2D.set_deferred("disabled", true)
-	popped.emit(global_position)
 	set_process(false)
 	# 짝을 이루는 "터진 뒤" 그림으로 바꿔 보여준 뒤 사라진다(크기도 다시 맞춘다)
 	$FaceSprite.texture = after_tex
@@ -101,10 +110,17 @@ func pop() -> void:
 	$PopSound.stream = sound
 	$PopSound.play()
 	# 사운드가 0.5초보다 길면 잘리지 않도록 재생 시간만큼 기다렸다가 없앤다.
+	# "터진 뒤" 그림이 실제로 화면에서 사라지는 이 시점에 popped를 알려서,
+	# 같은 종류의 새 아이템이 바로 이어서(빈틈없이) 나타나게 한다.
 	var wait_time: float = max(0.5, sound.get_length())
+	var pos := global_position
+	var idx := _resolved_pair_index
 	var tw := create_tween()
 	tw.tween_interval(wait_time)
-	tw.tween_callback(queue_free)
+	tw.tween_callback(func():
+		popped.emit(pos, idx)
+		queue_free()
+	)
 
 func setup_motion(dir: Vector2) -> void:
 	move_dir = dir.normalized()

@@ -16,7 +16,6 @@ texture = ExtResource("3_bg_tex")
 
 [node name="SpawnTimer" type="Timer" parent="."]
 wait_time = 1.714
-autostart = true
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 
