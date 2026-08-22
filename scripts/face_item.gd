@@ -42,7 +42,7 @@ const TARGET_MAX_DIM: float = 1195.0 * REFERENCE_SCALE
 
 ## 특정 그림만 기본 크기에서 배율을 더 주고 싶을 때 사용(그림 경로 → 배율)
 const SIZE_MULTIPLIERS := {
-	"res://assets/sprites/face_item_4.png": 1.2,
+	"res://assets/sprites/face_item_4.png": 1.62,
 }
 
 var speed: float = 0.0        # 진행 속도(px/초) - 두둥실 뜨는 느낌으로 저속
